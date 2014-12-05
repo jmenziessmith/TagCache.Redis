@@ -25,6 +25,7 @@ namespace TagCache.Redis.Tests
             var config = new CacheConfiguration()
             {
                 RootNameSpace = "_TestRootNamespace",
+                Serializer =  new BinarySerializationProvider(),
                 RedisClientConfiguration = new RedisClientConfiguration()
                 {
                     Host = _redisHost,

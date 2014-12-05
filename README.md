@@ -24,6 +24,7 @@ TagCache.Redis
 var config = new CacheConfiguration()
 	{
 		RootNameSpace = "_RedisCache",
+		Serializer =  new BinarySerializationProvider(),
 		RedisClientConfiguration = new RedisClientConfiguration()
 		{
 			Host = "localhost",
