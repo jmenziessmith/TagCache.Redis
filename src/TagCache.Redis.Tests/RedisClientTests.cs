@@ -3,7 +3,7 @@
 namespace TagCache.Redis.Tests
 {
     [TestFixture]
-    public class RedisClientTests
+    public class TagCacheTests
     {
         private string _redisHost = "localhost";
         private int _redisDB = 12;
@@ -12,12 +12,13 @@ namespace TagCache.Redis.Tests
         {
             return new RedisClient(_redisHost, _redisDB, 5000);
         }
+         
 
         [Test]
         public void Add_String_Succeeds()
         {
             var client = newRedisClient();
-            string key = "RedisClientTests.Add";
+            string key = "TagCacheTests:Add";
             string value = "Hello World!";
             
             client.Set(key, value,5);
@@ -29,7 +30,7 @@ namespace TagCache.Redis.Tests
         public void Get_MissingKey_ReturnsNull()
         {
             var client = newRedisClient();
-            string key = "RedisClientTests.NoValueHere";
+            string key = "TagCacheTests:NoValueHere";
 
             var result = client.Get(key);
 
@@ -40,7 +41,7 @@ namespace TagCache.Redis.Tests
         public void Get_AddedKey_ReturnsValue()
         {
             var client = newRedisClient();
-            string key = "RedisClientTests.Add";
+            string key = "TagCacheTests:Add";
             string value = "Hello World!";
 
             client.Set(key, value,5);
@@ -56,7 +57,7 @@ namespace TagCache.Redis.Tests
         public void Remove_AddedKey_ReturnsNull()
         {
             var client = newRedisClient();
-            string key = "RedisClientTests.Add";
+            string key = "TagCacheTests:Add";
             string value = "Hello World!";
 
             client.Set(key, value,5);
@@ -77,8 +78,8 @@ namespace TagCache.Redis.Tests
         public void RemoveMultiple_AddedKey_ReturnsNull()
         {
             var client = newRedisClient();
-            string key1 = "RedisClientTests.Add.First";
-            string key2 = "RedisClientTests.Add.Second";
+            string key1 = "TagCacheTests:Add.First";
+            string key2 = "TagCacheTests:Add.Second";
             string value1 = "value1";
             string value2 = "value1";
 

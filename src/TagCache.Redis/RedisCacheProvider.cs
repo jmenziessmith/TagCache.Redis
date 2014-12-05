@@ -14,15 +14,20 @@ namespace TagCache.Redis
         private RedisTagManager _tagManager;
         private RedisExpiryManager _expiryManager;
         private Serialization.ISerializationProvider _serializer;
+        private CacheConfiguration _cacheConfiguration;
 
-        public RedisCacheProvider()
+        public RedisCacheProvider() : this(new CacheConfiguration())
+        {
+            
+        }
+
+        public RedisCacheProvider(CacheConfiguration configuration)
         {
             // todo : the redis configuration needs to be injected
-            _client = new RedisClient(RedisConfiguration.Client.Host, RedisConfiguration.Client.DbNo, RedisConfiguration.Client.TimeoutMilliseconds);
-            //_serializer = new Serialization.JsonSerializationProvider();
-            _serializer = new Serialization.BinarySerializationProvider();
+            _client = new RedisClient(configuration.RedisClientConfiguration.Host, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
+            _serializer = configuration.Serializer;
             _tagManager = new RedisTagManager();
-            _expiryManager = new RedisExpiryManager();
+            _expiryManager = new RedisExpiryManager(configuration);
             _cacheItemProvider = new RedisCacheItemProvider(_serializer);
         }
 
@@ -139,7 +144,7 @@ namespace TagCache.Redis
         /// <returns></returns>
         public string[] RemoveExpiredKeys()
         {
-            var maxDate = DateTime.Now.AddMinutes(-RedisConfiguration.Expiry.MinutesToRemoveAfterExpiry);
+            var maxDate = DateTime.Now.AddMinutes(CacheConfiguration.MinutesToRemoveAfterExpiry);
             var keys = _expiryManager.GetExpiredKeys(_client, maxDate);
             Remove(keys);
             return keys;

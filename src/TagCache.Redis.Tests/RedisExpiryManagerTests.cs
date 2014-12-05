@@ -19,9 +19,9 @@ namespace TagCache.Redis.Tests
         public void SetKeyExpiry_SetsValue()
         {
             var client = newRedisClient();
-            client.Remove(RedisExpiryManager._setKey);
+            client.Remove(new RedisExpiryManager(new CacheConfiguration())._setKey);
 
-            var expiryManager = new RedisExpiryManager();
+            var expiryManager = new RedisExpiryManager(new CacheConfiguration());
             var key = "my.expiringkey.1";
 
             expiryManager.SetKeyExpiry(client, key, new DateTime(2012, 1, 1, 12, 1, 1));
@@ -32,9 +32,9 @@ namespace TagCache.Redis.Tests
         public void GetExpiredKeys_Date2_ReturnsKeysLessThanDate()
         {
             var client = newRedisClient();
-            client.Remove(RedisExpiryManager._setKey);
+            client.Remove(new RedisExpiryManager(new CacheConfiguration())._setKey);
 
-            var expiryManager = new RedisExpiryManager();
+            var expiryManager = new RedisExpiryManager(new CacheConfiguration());
             var key1 = "my.expiringkey.1";
             var key2 = "my.expiringkey.2";
             var key3 = "my.expiringkey.3";
@@ -58,9 +58,9 @@ namespace TagCache.Redis.Tests
         public void GetExpiredKeys_DateMax_ReturnsKeysLessThanDate()
         {
             var client = newRedisClient();
-            client.Remove(RedisExpiryManager._setKey);
+            client.Remove(new RedisExpiryManager(new CacheConfiguration())._setKey);
 
-            var expiryManager = new RedisExpiryManager();
+            var expiryManager = new RedisExpiryManager(new CacheConfiguration());
             var key1 = "my.expiringkey.1";
             var key2 = "my.expiringkey.2";
             var key3 = "my.expiringkey.3";
@@ -82,9 +82,9 @@ namespace TagCache.Redis.Tests
         public void GetExpiredKeys_DateMin_ReturnsNone()
         {
             var client = newRedisClient();
-            client.Remove(RedisExpiryManager._setKey);
+            client.Remove(new RedisExpiryManager(new CacheConfiguration())._setKey);
 
-            var expiryManager = new RedisExpiryManager();
+            var expiryManager = new RedisExpiryManager(new CacheConfiguration());
             var key1 = "my.expiringkey.1";
             var key2 = "my.expiringkey.2";
             var key3 = "my.expiringkey.3";
@@ -107,9 +107,9 @@ namespace TagCache.Redis.Tests
             var client = newRedisClient();
 	        var provider = new RedisCacheProvider();
             
-            client.Remove(RedisExpiryManager._setKey);
+            client.Remove(new RedisExpiryManager(new CacheConfiguration())._setKey);
 
-            var expiryManager = new RedisExpiryManager();
+            var expiryManager = new RedisExpiryManager(new CacheConfiguration());
             var key1 = "my.expiringkey.1";
             var key2 = "my.expiringkey.2";
             var key3 = "my.expiringkey.3";

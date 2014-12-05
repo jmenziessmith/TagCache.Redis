@@ -17,15 +17,61 @@ namespace TagCache.Redis.Tests
             return new RedisClient(_redisHost, _redisDB, 5000);
         }
 
+
+
+        [Test]
+        public void Ctor_Configuration__Succeeds()
+        {
+            var config = new CacheConfiguration()
+            {
+                RootNameSpace = "_TestRootNamespace",
+                RedisClientConfiguration = new RedisClientConfiguration()
+                {
+                    Host = _redisHost,
+                    DbNo = _redisDB,
+                    TimeoutMilliseconds = 500
+                }
+            };
+            var cache = new RedisCacheProvider(config);
+            string key = "TagCacheTests:Add";
+            String value = "Hello World!";
+            DateTime expires = new DateTime(2099, 12, 11);
+            cache.Set(key, value, expires);
+
+            // no exception
+        }
+
+
+
+        [ExpectedException]
+        [Test]
+        public void Ctor_Configuration__Fails()
+        {
+            var config = new CacheConfiguration()
+                         {
+                             RedisClientConfiguration = new RedisClientConfiguration()
+                                                        {
+                                                            Host = "nohost",
+                                                            TimeoutMilliseconds = 500
+                                                        }
+                         };
+            var cache = new RedisCacheProvider(config);
+            string key = "TagCacheTests:Add";
+            String value = "Hello World!";
+            DateTime expires = new DateTime(2099, 12, 11);
+            cache.Set(key, value, expires);
+
+            Assert.Fail("Exception should be thrown with bad connections");
+        }
+
         [Test]
         public void Set_String_Succeeds()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
-            DateTime expires = new DateTime(2099, 12, 11);
-
-            client.Set(key, value, expires);
+            DateTime expires = new DateTime(2099, 12, 11); 
+            cache.Set(key, value, expires);
 
             // no exception
         }
@@ -33,10 +79,10 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_MissingKey_ReturnsNull()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.NoValueHere." + DateTime.Now.Ticks;
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:NoValueHere." + DateTime.Now.Ticks;
 
-            var result = client.Get<String>(key);
+            var result = cache.Get<String>(key);
 
             Assert.IsNull(result);
         }
@@ -44,13 +90,13 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_AddedKey_ReturnsValue()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2099, 12, 11);
 
-            client.Set(value, key, expires);
-            var result = client.Get<String>(key);
+            cache.Set(value, key, expires);
+            var result = cache.Get<String>(key);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(value, result);
@@ -61,19 +107,19 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Remove_AddedKey_ReturnsNull()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2099, 12, 11);
 
-            client.Set(value, key, expires);
+            cache.Set(value, key, expires);
 
-            var result = client.Get<String>(key); 
+            var result = cache.Get<String>(key); 
 
             Assert.AreEqual(value, result); 
 
-            client.Remove(key);
-            result = client.Get<String>(key);
+            cache.Remove(key);
+            result = cache.Get<String>(key);
 
             Assert.IsNull(result); 
         }
@@ -83,25 +129,25 @@ namespace TagCache.Redis.Tests
         [Test]
         public void RemoveMultiple_AddedKey_ReturnsNull()
         {
-            var client = newRedisClient();
-            string key1 = "RedisClientTests.Add.First";
-            string key2 = "RedisClientTests.Add.Second";
+            var cache = newRedisClient();
+            string key1 = "TagCacheTests:Add.First";
+            string key2 = "TagCacheTests:Add.Second";
             string value1 = "value1";
             string value2 = "value1";
 
-            client.Set(key1, value1,1);
-            client.Set(key2, value2,1);
+            cache.Set(key1, value1,1);
+            cache.Set(key2, value2,1);
             
-            var result1 = client.Get(key1);
-            var result2 = client.Get(key2);
+            var result1 = cache.Get(key1);
+            var result2 = cache.Get(key2);
 
             Assert.AreEqual(value1, result1);
             Assert.AreEqual(value2, result2);
 
-            client.Remove(new string[] { key1, key2 });
+            cache.Remove(new string[] { key1, key2 });
 
-            result1 = client.Get(key1);
-            result2 = client.Get(key2);
+            result1 = cache.Get(key1);
+            result2 = cache.Get(key2);
 
             Assert.IsNull(result1);
             Assert.IsNull(result2);
@@ -111,13 +157,13 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_ReturnsNull()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2000, 12, 11);
 
-            client.Set(value, key, expires); 
-            var result = client.Get<String>(key);
+            cache.Set(value, key, expires); 
+            var result = cache.Get<String>(key);
 
             Assert.IsNull(result);
         }
@@ -126,13 +172,13 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_RemovesFromCache()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2000, 12, 11);
 
-            client.Set(value, key, expires);
-            var test = client.Get<String>(key);
+            cache.Set(value, key, expires);
+            var test = cache.Get<String>(key);
 
             var cacheItemProvider = new RedisCacheItemProvider(new JsonSerializationProvider());
 
@@ -145,14 +191,14 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_RemovesTags()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             var tag = "remove tag";
             DateTime expires = new DateTime(2000, 12, 11);
 
-            client.Set(value, key, expires, tag);
-            var test = client.Get<String>(key);
+            cache.Set(value, key, expires, tag);
+            var test = cache.Get<String>(key);
 
             var tagManager = new RedisTagManager();
 
@@ -166,15 +212,15 @@ namespace TagCache.Redis.Tests
         [Test]
         public void GetByTag_SingleItemManyTags_ReturnsSingleValue()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2099, 12, 11);
             var tags = new List<string> { "tag1", "tag2", "tag3" };
 
-            client.Set(key, value, expires, tags);
+            cache.Set(key, value, expires, tags);
 
-            var results = client.GetByTag<String>("tag2");
+            var results = cache.GetByTag<String>("tag2");
 
             Assert.IsNotNull(results);
             Assert.IsTrue(results.Count > 0);
@@ -184,22 +230,51 @@ namespace TagCache.Redis.Tests
         [Test]
         public void GetByTag_ManyItemSingleTag_ReturnsManyValues()
         {
-            var client = new RedisCacheProvider();
-            string key = "RedisClientTests.Add";
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
             String value1 = "Hello World!";
             String value3 = "Two";
             String value2 = "Three";
             DateTime expires = new DateTime(2099, 12, 11);
             var tags = new List<string> { "another tag" };
 
-            client.Set(key, value1, expires, tags);
-            client.Set(key, value2, expires, tags);
-            client.Set(key, value3, expires, tags);
+            cache.Set(key, value1, expires, tags);
+            cache.Set(key, value2, expires, tags);
+            cache.Set(key, value3, expires, tags);
 
-            var results = client.GetByTag<String>(tags[0]);
+            var results = cache.GetByTag<String>(tags[0]);
 
             Assert.IsNotNull(results);
             Assert.AreEqual(results.Count, 3);
+        }
+
+
+
+        [Test]
+        public void RemoveByTag_ManyItemSingleTag_ReturnsNoValues()
+        {
+            var cache = new RedisCacheProvider();
+            string key = "TagCacheTests:Add";
+            String value1 = "Hello World!";
+            String value3 = "Two";
+            String value2 = "Three";
+            DateTime expires = new DateTime(2099, 12, 11);
+            var tags = new List<string> { "another tag" };
+
+            cache.Set(key, value1, expires, tags);
+            cache.Set(key, value2, expires, tags);
+            cache.Set(key, value3, expires, tags);
+
+            var results = cache.GetByTag<String>(tags[0]);
+
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Count, 3);
+
+
+            cache.RemoveByTag(tags[0]);
+            results = cache.GetByTag<String>(tags[0]);
+
+            Assert.IsNull(results); 
         }
 
 

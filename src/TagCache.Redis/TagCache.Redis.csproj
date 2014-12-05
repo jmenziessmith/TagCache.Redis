@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheConfiguration.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Interfaces\IRedisCacheProvider.cs" />
     <Compile Include="RedisExpiryManager.cs" />

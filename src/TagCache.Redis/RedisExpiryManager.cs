@@ -5,7 +5,12 @@ namespace TagCache.Redis
 {
     public class RedisExpiryManager
     {
-        public static readonly string _setKey = "_redisCache:_cacheExpireyKeys";
+        public readonly string _setKey;
+
+        public RedisExpiryManager(CacheConfiguration configuration)
+        {
+            _setKey = string.Format("{0}:_cacheExpireyKeys", configuration.RootNameSpace);
+        }
 
 
         public void SetKeyExpiry(RedisClient client, string key, DateTime expiryDate)

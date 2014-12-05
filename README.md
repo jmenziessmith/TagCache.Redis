@@ -19,10 +19,24 @@ TagCache.Redis
 ## Usage
 
 ### Configuration
-> *TODO*
+```c#
+var config = new CacheConfiguration()
+	{
+		RootNameSpace = "_RedisCache",
+		RedisClientConfiguration = new RedisClientConfiguration()
+		{
+			Host = "localhost",
+			DbNo = 0,
+			TimeoutMilliseconds = 500
+		}
+	};
+var cache = new RedisCacheProvider(config);
+```
 
-### Connecto to client
-> *TODO*
+### No Configuration
+```c#
+var cache = new RedisCacheProvider(); // will default to localhost
+```
 
 ### Adding Items
 #### Add an item without tags
