@@ -19,6 +19,7 @@ TagCache.Redis
 ## Usage
 
 ### Configuration
+*Any unset properties will use default values*
 ```c#
 var config = new CacheConfiguration()
 	{
