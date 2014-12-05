@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis", "TagCache.Redis\TagCache.Redis.csproj", "{280F50BA-1633-4DE0-8C6F-77F82290D214}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.Tests", "TagCache.Redis.Tests\TagCache.Redis.Tests.csproj", "{65B5F241-C7B8-4650-BD37-D92EF528A422}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisEvents.ConsoleApp", "RedisEvents.ConsoleApp\RedisEvents.ConsoleApp.csproj", "{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E8EEF7A7-91E8-4DA9-AF7E-4084922F7F2F}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{280F50BA-1633-4DE0-8C6F-77F82290D214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{280F50BA-1633-4DE0-8C6F-77F82290D214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{280F50BA-1633-4DE0-8C6F-77F82290D214}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{280F50BA-1633-4DE0-8C6F-77F82290D214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65B5F241-C7B8-4650-BD37-D92EF528A422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65B5F241-C7B8-4650-BD37-D92EF528A422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65B5F241-C7B8-4650-BD37-D92EF528A422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65B5F241-C7B8-4650-BD37-D92EF528A422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
