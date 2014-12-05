@@ -13,3 +13,9 @@
 /src/TagCache.Redis/bin/Debug
 /src/TagCache.Redis.Tests/obj/Debug
 /src/TagCache.Redis.Tests/bin/Debug
+/src/packages/NUnit.2.6.3/lib
+/src/packages/NUnit.2.6.3/lib/nunit.framework.dll
+/src/packages/NUnit.2.6.3/lib/nunit.framework.xml
+/src/packages/NUnit.2.6.3/license.txt
+/src/packages/NUnit.2.6.3/NUnit.2.6.3.nupkg
+/src/packages/NUnit.2.6.3/NUnit.2.6.3.nuspec
