@@ -1,13 +1,12 @@
 ﻿using System;
-using TagCache.Redis;
+using NUnit.Framework; 
 using TagCache.Redis.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic; 
-using System.Linq;
+using System.Linq; 
 
 namespace TagCache.Redis.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class RedisCacheProviderTests
     {
         private string _redisHost = "localhost";
@@ -18,7 +17,7 @@ namespace TagCache.Redis.Tests
             return new RedisClient(_redisHost, _redisDB, 5000);
         }
 
-        [TestMethod]
+        [Test]
         public void Set_String_Succeeds()
         {
             var client = new RedisCacheProvider();
@@ -31,7 +30,7 @@ namespace TagCache.Redis.Tests
             // no exception
         }
 
-        [TestMethod]
+        [Test]
         public void Get_MissingKey_ReturnsNull()
         {
             var client = new RedisCacheProvider();
@@ -42,7 +41,7 @@ namespace TagCache.Redis.Tests
             Assert.IsNull(result);
         }
 
-        [TestMethod]
+        [Test]
         public void Get_AddedKey_ReturnsValue()
         {
             var client = new RedisCacheProvider();
@@ -59,7 +58,7 @@ namespace TagCache.Redis.Tests
 
 
 
-        [TestMethod]
+        [Test]
         public void Remove_AddedKey_ReturnsNull()
         {
             var client = new RedisCacheProvider();
@@ -81,7 +80,7 @@ namespace TagCache.Redis.Tests
 
 
 
-        [TestMethod]
+        [Test]
         public void RemoveMultiple_AddedKey_ReturnsNull()
         {
             var client = newRedisClient();
@@ -109,7 +108,7 @@ namespace TagCache.Redis.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void Get_ExpiredDate_ReturnsNull()
         {
             var client = new RedisCacheProvider();
@@ -124,7 +123,7 @@ namespace TagCache.Redis.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void Get_ExpiredDate_RemovesFromCache()
         {
             var client = new RedisCacheProvider();
@@ -143,7 +142,7 @@ namespace TagCache.Redis.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void Get_ExpiredDate_RemovesTags()
         {
             var client = new RedisCacheProvider();
@@ -164,7 +163,7 @@ namespace TagCache.Redis.Tests
 
 
 
-        [TestMethod]
+        [Test]
         public void GetByTag_SingleItemManyTags_ReturnsSingleValue()
         {
             var client = new RedisCacheProvider();
@@ -182,7 +181,7 @@ namespace TagCache.Redis.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void GetByTag_ManyItemSingleTag_ReturnsManyValues()
         {
             var client = new RedisCacheProvider();

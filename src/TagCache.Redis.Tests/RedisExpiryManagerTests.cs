@@ -1,14 +1,10 @@
-﻿using TagCache.Redis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NUnit.Framework; 
+using System; 
+using System.Linq; 
 
 namespace TagCache.Redis.Tests
 {
-	[TestClass]
+	[TestFixture]
     public class RedisExpiryManagerTests
     {
         private string _redisHost = "localhost";
@@ -19,7 +15,7 @@ namespace TagCache.Redis.Tests
             return new RedisClient(_redisHost, _redisDB, 5000);
         }
 
-        [TestMethod]
+        [Test]
         public void SetKeyExpiry_SetsValue()
         {
             var client = newRedisClient();
@@ -32,7 +28,7 @@ namespace TagCache.Redis.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void GetExpiredKeys_Date2_ReturnsKeysLessThanDate()
         {
             var client = newRedisClient();
@@ -58,7 +54,7 @@ namespace TagCache.Redis.Tests
 
 
 
-        [TestMethod]
+        [Test]
         public void GetExpiredKeys_DateMax_ReturnsKeysLessThanDate()
         {
             var client = newRedisClient();
@@ -82,7 +78,7 @@ namespace TagCache.Redis.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void GetExpiredKeys_DateMin_ReturnsNone()
         {
             var client = newRedisClient();
@@ -105,7 +101,7 @@ namespace TagCache.Redis.Tests
         }
 
 
-	    [TestMethod]
+	    [Test]
 	    public void CleanupExpiredKeys_RemovesOldItems()
 	    {
             var client = newRedisClient();

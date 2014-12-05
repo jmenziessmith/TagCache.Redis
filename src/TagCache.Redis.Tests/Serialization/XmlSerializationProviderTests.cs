@@ -1,19 +1,16 @@
-﻿using TagCache.Redis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework; 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TagCache.Redis.Serialization;
+using System.Linq; 
+using TagCache.Redis.Serialization; 
 
 namespace TagCache.Redis.Tests.Serialization
 {
-    [TestClass]
+    [TestFixture]
     public class XmlSerializationProviderTests
     {
 
-        [TestMethod]
+        [Test]
         public void Serialize_RedisCacheItem_ReturnsString()
         {
             var value = new RedisCacheItem()
@@ -31,7 +28,7 @@ namespace TagCache.Redis.Tests.Serialization
             Assert.IsNotNull(result);            
         }
 
-        [TestMethod]
+        [Test]
         public void Deserialize_SerializedString_ReturnsRedisCacheItem()
         {
             var value = new RedisCacheItem()
