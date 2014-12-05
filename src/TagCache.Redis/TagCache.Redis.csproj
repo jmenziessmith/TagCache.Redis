@@ -55,7 +55,7 @@
     <Compile Include="Serialization\BinarySerializationProvider.cs" />
     <Compile Include="Serialization\JsonSerializationProvider.cs" />
     <Compile Include="Serialization\XmlSerializationProvider.cs" />
-    <Compile Include="Serialization\ISerializationProvider.cs" />
+    <Compile Include="Interfaces\ISerializationProvider.cs" />
     <Compile Include="RedisCacheItemProvider.cs" />
     <Compile Include="RedisCacheItem.cs" />
     <Compile Include="RedisCacheProvider.cs" />

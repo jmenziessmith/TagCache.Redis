@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis
 {
     public class RedisCacheItemProvider
     {
-        private Serialization.ISerializationProvider _serializer;
+        private ISerializationProvider _serializer;
 
-        public RedisCacheItemProvider(Serialization.ISerializationProvider serializer)
+        public RedisCacheItemProvider(ISerializationProvider serializer)
         {
             _serializer = serializer;
         }

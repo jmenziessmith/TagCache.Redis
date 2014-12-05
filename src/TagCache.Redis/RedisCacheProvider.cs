@@ -13,7 +13,7 @@ namespace TagCache.Redis
         private RedisCacheItemProvider _cacheItemProvider;
         private RedisTagManager _tagManager;
         private RedisExpiryManager _expiryManager;
-        private Serialization.ISerializationProvider _serializer;
+        private ISerializationProvider _serializer;
         private CacheConfiguration _cacheConfiguration;
 
         public RedisCacheProvider() : this(new CacheConfiguration())

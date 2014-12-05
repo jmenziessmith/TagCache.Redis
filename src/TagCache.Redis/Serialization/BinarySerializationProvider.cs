@@ -1,10 +1,11 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using System.IO;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis.Serialization
 {
-    public class BinarySerializationProvider : Serialization.ISerializationProvider
+    public class BinarySerializationProvider : ISerializationProvider
     {
         BinaryFormatter formatter = new BinaryFormatter();
 

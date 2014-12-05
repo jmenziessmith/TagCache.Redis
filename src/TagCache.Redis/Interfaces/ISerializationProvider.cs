@@ -1,4 +1,4 @@
-﻿namespace TagCache.Redis.Serialization
+﻿namespace TagCache.Redis.Interfaces
 {
     public interface ISerializationProvider
     {

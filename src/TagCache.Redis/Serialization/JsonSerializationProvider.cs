@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis.Serialization
 {
-    public class JsonSerializationProvider : Serialization.ISerializationProvider
+    public class JsonSerializationProvider : ISerializationProvider
     {
 
         public T Deserialize<T>(string value) where T : class

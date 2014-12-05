@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis.Serialization
 {
-    public class XmlSerializationProvider : Serialization.ISerializationProvider
+    public class XmlSerializationProvider : ISerializationProvider
     {
 
         public T Deserialize<T>(string value) where T : class
