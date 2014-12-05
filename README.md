@@ -3,6 +3,11 @@ TagCache.Redis
 
 .Net Redis Cache with support for tagging
 
+> To configure redis to allow detection of cache expiry, configure redis with
+>
+>*config set notify-keyspace-events KEA*
+>
+
 ##Features
  * Simple key value caching
  * Cache item expiry
