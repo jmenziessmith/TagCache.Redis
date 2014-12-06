@@ -22,3 +22,6 @@
 *.user
 /src/RedisCacheLogMonitor.ConsoleApp/bin/Debug
 /src/RedisCacheLogMonitor.ConsoleApp/obj/Debug
+/src/SampleMvcSite/bin
+/src/SampleMvcSite/obj/Debug
+/src/packages
