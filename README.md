@@ -23,6 +23,11 @@ TagCache.Redis
 
 ## Usage
 
+### NuGet
+```
+PM> Install-Package TagCache.Redis
+```
+
 ### Configuration
 *Any unset properties will use default values*
 ```c#
