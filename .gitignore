@@ -20,3 +20,5 @@
 /src/packages/NUnit.2.6.3/NUnit.2.6.3.nupkg
 /src/packages/NUnit.2.6.3/NUnit.2.6.3.nuspec
 *.user
+/src/RedisCacheLogMonitor.ConsoleApp/bin/Debug
+/src/RedisCacheLogMonitor.ConsoleApp/obj/Debug
