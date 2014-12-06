@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TagCache.Redis.Tests.Helpers;
 
 namespace TagCache.Redis.Tests
 {
@@ -23,6 +24,7 @@ namespace TagCache.Redis.Tests
             var config = new CacheConfiguration();
 
             var cache = new RedisCacheProvider(config); 
+            cache.Logger = new TestRedisLogger();
 
             string key = "TagCacheTests:ItemExpires_RemovedFromCache";
             String value = "Hello World!";
@@ -31,7 +33,7 @@ namespace TagCache.Redis.Tests
             string tag1 = "tag1";
             string tag2 = "tag2";
 
-            cache.Set(value, key, expires, new List<string> { tag1, tag2 });
+            cache.Set(key, value, expires, new List<string> { tag1, tag2 });
             var result = cache.Get<String>(key);
 
             Assert.IsNotNull(result);
@@ -64,6 +66,7 @@ namespace TagCache.Redis.Tests
             var cache = new RedisCacheProvider(config);
             var client = newRedisClient(config.RedisClientConfiguration);
 
+            cache.Logger = new TestRedisLogger();
 
             string key = "TagCacheTests:ItemExpires_Tag_RemovedFromCache";
             String value = "Hello World!";
@@ -72,7 +75,7 @@ namespace TagCache.Redis.Tests
             string tag1 = "tag1";
             string tag2 = "tag2";
 
-            cache.Set(value, key, expires, new List<string>{tag1, tag2});
+            cache.Set(key, value, expires, new List<string>{tag1, tag2});
 
             // first check everything has been set
             var result = cache.Get<String>(key);

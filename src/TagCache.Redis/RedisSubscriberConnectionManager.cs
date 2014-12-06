@@ -38,8 +38,7 @@ namespace TagCache.Redis
                 {
                     if (_connection == null)
                     {
-                        _connection = new RedisSubscriberConnection(Host, Port, IOTimeout, Password, MaxUnsent);
-                        Debug.WriteLine("RedisSubscriberConnectionManager : New Connection");
+                        _connection = new RedisSubscriberConnection(Host, Port, IOTimeout, Password, MaxUnsent); 
 
                         _connection.Shutdown += ConnectionOnShutdown;
                         var openTask = _connection.Open();

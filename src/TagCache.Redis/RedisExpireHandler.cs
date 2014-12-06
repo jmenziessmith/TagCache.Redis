@@ -8,6 +8,7 @@ namespace TagCache.Redis
         private CacheConfiguration _configuration;
         private RedisSubscriberConnection _subscriber;
         internal Action<string> RemoveMethod;
+        public Action<string, string, string> LogMethod { get; set; }
 
         public RedisExpireHandler(CacheConfiguration configuration)
         {
@@ -17,7 +18,6 @@ namespace TagCache.Redis
 
         public DateTime LastExpiredDate { get; set; }
 
-        
 
         void SubscriberMessageReceived(string e, byte[] message)
         {
@@ -26,6 +26,7 @@ namespace TagCache.Redis
                 var key = System.Text.Encoding.UTF8.GetString(message);
                 //if (key.StartsWith(_configuration.RootNameSpace))
                 //{
+                    LogMethod("Expired", key, null);   
                     RemoveMethod(key);   
                 //}
             }

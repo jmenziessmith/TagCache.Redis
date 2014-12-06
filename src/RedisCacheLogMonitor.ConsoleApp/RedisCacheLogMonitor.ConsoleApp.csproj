@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{280F50BA-1633-4DE0-8C6F-77F82290D214}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{228B7621-5841-49C3-8E23-9F8119D49352}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TagCache.Redis</RootNamespace>
-    <AssemblyName>TagCache.Redis</AssemblyName>
+    <RootNamespace>RedisCacheLogMonitor.ConsoleApp</RootNamespace>
+    <AssemblyName>RedisCacheLogMonitor.ConsoleApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,55 +22,40 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BookSleeve">
-      <HintPath>..\packages\BookSleeve.1.3.41\lib\BookSleeve.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CacheConfiguration.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Interfaces\IRedisCacheLogger.cs" />
-    <Compile Include="Interfaces\IRedisCacheProvider.cs" />
-    <Compile Include="RedisExpiryManager.cs" />
-    <Compile Include="RedisSubscriberConnectionManager.cs" />
-    <Compile Include="RedisConnectionManager.cs" />
-    <Compile Include="RedisExpireHandler.cs" />
-    <Compile Include="Serialization\BinarySerializationProvider.cs" />
-    <Compile Include="Serialization\JsonSerializationProvider.cs" />
-    <Compile Include="Serialization\XmlSerializationProvider.cs" />
-    <Compile Include="Interfaces\ISerializationProvider.cs" />
-    <Compile Include="RedisCacheItemProvider.cs" />
-    <Compile Include="RedisCacheItem.cs" />
-    <Compile Include="RedisCacheProvider.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RedisClient.cs" />
-    <Compile Include="RedisConfiguration.cs" />
-    <Compile Include="RedisTagManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\TagCache.Redis\TagCache.Redis.csproj">
+      <Project>{280f50ba-1633-4de0-8c6f-77f82290d214}</Project>
+      <Name>TagCache.Redis</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -16,6 +16,8 @@ namespace TagCache.Redis
         private ISerializationProvider _serializer;
         private CacheConfiguration _cacheConfiguration;
 
+        public IRedisCacheLogger Logger { get; set; }
+
         // singleton dictionary<host,expirehandler>
         private static Dictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
 
@@ -35,6 +37,7 @@ namespace TagCache.Redis
             SetupExpireHandler(configuration, this);
         }
 
+
         private static void SetupExpireHandler(CacheConfiguration configuration, RedisCacheProvider redisCacheProvider)
         {
             if (_redisExpireHandlersByHost == null)
@@ -45,20 +48,37 @@ namespace TagCache.Redis
             {
                 var handler = new RedisExpireHandler(configuration);
                 handler.RemoveMethod = redisCacheProvider.Remove;
+                handler.LogMethod = redisCacheProvider.Log;
                 _redisExpireHandlersByHost.Add(configuration.RedisClientConfiguration.Host, handler);
             }
         }
 
-        public T Get<T>(string key) where T : class
+        private void Log(string method, string arg, string message)
         {
+            try
+            {
+                if (Logger != null)
+                {
+                    Logger.Log(method, arg, message);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        public T Get<T>(string key) where T : class
+        { 
             var cacheItem = _cacheItemProvider.Get(_client, key);
             if (cacheItem != null)
             {
                 if (CacheItemIsValid(cacheItem))
                 {
+                    Log("Get", key, "Found");
                     return cacheItem.Value as T;
                 }
             }
+            Log("Get", key, "Not Found");
             return default(T);
         }
 
@@ -83,8 +103,11 @@ namespace TagCache.Redis
                     }
                 }
 
+                Log("GetByTag", tag, "Found");
                 return result;
             }
+
+            Log("GetByTag", tag, "Not Found");
             return null;
         }
 
@@ -97,31 +120,35 @@ namespace TagCache.Redis
             }
             return true;
         }
-         
 
-        public void Set<T>(T value, string key, DateTime expires, string tag = null) where T : class
+
+        public void Set<T>(string key, T value, DateTime expires, string tag = null) where T : class
         { 
+            Log("Set", key, null);
             var tags = string.IsNullOrEmpty(tag) ? null : new List<string> { tag };
-            Set(value, key, expires, tags);
+            Set(key, value, expires, tags); 
         }
 
-        public void Set<T>(T value, string key, DateTime expires, List<string> tags) where T : class
+        public void Set<T>(string key, T value, DateTime expires, List<string> tags) where T : class
         { 
+            Log("Set", key, null);
             if (_cacheItemProvider.Set(_client, value, key, expires, tags))
             {
                 _tagManager.UpdateTags(_client, key, tags);
-            }
+            } 
         }
 
 
         public void Remove(string key)
         {
+            Log("Remove", key, null);
             Remove(new[]{key});
         }
 
         public void RemoveByTag(string tag)
         {
-           var keys = _tagManager.GetKeysForTag(_client, tag);
+            Log("RemoveByTag", tag, null);
+            var keys = _tagManager.GetKeysForTag(_client, tag);
             if (keys != null && keys.Length > 0)
             {
                 Remove(keys);

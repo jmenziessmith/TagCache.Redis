@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System; 
 using BookSleeve;
 
 namespace TagCache.Redis
@@ -38,8 +37,7 @@ namespace TagCache.Redis
                 {
                     if (_connection == null)
                     {
-                        _connection = new RedisConnection(Host, Port, IOTimeout, Password, MaxUnsent, AllowAdmin, SyncTimeout);
-                        Debug.WriteLine("RedisConnectionManager : New Connection");
+                        _connection = new RedisConnection(Host, Port, IOTimeout, Password, MaxUnsent, AllowAdmin, SyncTimeout); 
 
                         _connection.Shutdown += ConnectionOnShutdown;
                         var openTask = _connection.Open();

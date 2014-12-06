@@ -8,8 +8,8 @@ namespace TagCache.Redis.Interfaces
     {
         T Get<T>(string key) where T : class;
         List<T> GetByTag<T>(string tag) where T : class;
-        void Set<T>(T value, string key, DateTime expires, string tag = null) where T : class;
-        void Set<T>(T value, string key, DateTime expires, List<string> tags) where T : class;
+        void Set<T>(string key, T value, DateTime expires, string tag = null) where T : class;
+        void Set<T>(string key, T value, DateTime expires, List<string> tags) where T : class;
         void Remove(string key);
         void Remove(IEnumerable<string> keys);
         void Remove(string[] keys);
