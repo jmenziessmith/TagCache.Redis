@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +19,8 @@ namespace TagCache.Redis
 
         public IRedisCacheLogger Logger { get; set; }
 
-        // singleton dictionary<host,expirehandler>
-        private static Dictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
+        // singleton dictionary<host,expirehandler> 
+        private static ConcurrentDictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
 
         public RedisCacheProvider() : this(new CacheConfiguration())
         {
@@ -42,14 +43,14 @@ namespace TagCache.Redis
         {
             if (_redisExpireHandlersByHost == null)
             {
-                _redisExpireHandlersByHost = new Dictionary<string, RedisExpireHandler>();
+                _redisExpireHandlersByHost = new ConcurrentDictionary<string, RedisExpireHandler>();
             }
             if (!_redisExpireHandlersByHost.ContainsKey(configuration.RedisClientConfiguration.Host))
             {
                 var handler = new RedisExpireHandler(configuration);
                 handler.RemoveMethod = redisCacheProvider.Remove;
                 handler.LogMethod = redisCacheProvider.Log;
-                _redisExpireHandlersByHost.Add(configuration.RedisClientConfiguration.Host, handler);
+                _redisExpireHandlersByHost.TryAdd(configuration.RedisClientConfiguration.Host, handler);
             }
         }
 
@@ -123,8 +124,7 @@ namespace TagCache.Redis
 
 
         public void Set<T>(string key, T value, DateTime expires, string tag = null) where T : class
-        { 
-            Log("Set", key, null);
+        {  
             var tags = string.IsNullOrEmpty(tag) ? null : new List<string> { tag };
             Set(key, value, expires, tags); 
         }
