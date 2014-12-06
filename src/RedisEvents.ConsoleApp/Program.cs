@@ -14,6 +14,7 @@ namespace RedisEvents.ConsoleApp
         public static BookSleeve.RedisConnection _conn { get; set; }
         public static BookSleeve.RedisSubscriberConnection channel { get; set; }
 
+        private const int _db = 0;
 
         /// <summary>
         /// This is a small application to test event subscriptions in redis - which are required for automatic expiry of cache items
@@ -30,7 +31,7 @@ namespace RedisEvents.ConsoleApp
             c.Wait();
             System.Console.WriteLine("Conn : " + _conn.State);
 
-            _conn.Keys.Remove(12, "_expireys");
+            _conn.Keys.Remove(_db, "_expireys");
 
 
             _subConn = new BookSleeve.RedisSubscriberConnection("localhost");
@@ -69,7 +70,7 @@ namespace RedisEvents.ConsoleApp
         /// <param name="i">used for the key and value</param>
         public static void Set(int i, int expirySeconds)
         {
-            var set = _conn.Strings.Set(12, "testing:key:val" + i, "n" + i, expirySeconds);
+            var set = _conn.Strings.Set(_db, "testing:key:val" + i, "n" + i, expirySeconds);
             set.Wait();  
             Console.WriteLine("Set testing:key:val{0} to {0}  and expire in {1} seconds" , i, expirySeconds); 
         }

@@ -11,7 +11,7 @@ namespace TagCache.Redis.Tests
     public class RedisCacheProviderTests
     {
         private string _redisHost = "localhost";
-        private int _redisDB = 12;
+        private int _redisDB = 0;
 
         private RedisClient newRedisClient()
         {

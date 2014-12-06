@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq; 
+using System.Threading; 
 using NUnit.Framework;
 using TagCache.Redis.Tests.Helpers;
 
@@ -67,13 +65,14 @@ namespace TagCache.Redis.Tests
             var client = newRedisClient(config.RedisClientConfiguration);
 
             cache.Logger = new TestRedisLogger();
+            Console.WriteLine("Start Logger");
 
             string key = "TagCacheTests:ItemExpires_Tag_RemovedFromCache";
             String value = "Hello World!";
             DateTime expires = DateTime.Now.AddSeconds(3);
             
-            string tag1 = "tag1";
-            string tag2 = "tag2";
+            string tag1 = "tag1001";
+            string tag2 = "tag1002";
 
             cache.Set(key, value, expires, new List<string>{tag1, tag2});
 
