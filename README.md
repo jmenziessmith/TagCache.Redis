@@ -3,7 +3,7 @@ TagCache.Redis
 
 .Net Redis Cache with support for tagging
 
-> To configure redis to allow detection of cache expiry, configure redis with
+> To allow detection of cache expiry, configure redis with
 >
 >*config set notify-keyspace-events Ex*
 >
@@ -15,9 +15,9 @@ TagCache.Redis
  * Retrieve cache items by tag
  * Remove all items by tag
  * Multiple Serialization options 
+ * Basic logging interface
  
 ### Roadmap
-* Expiry notification events
 * Multiplexed caching (sync with in memory cache)
 * Upgrade from booksleeve to StackExchange.Redis 
 
@@ -89,7 +89,11 @@ cache.Remove(new string[] { "key2", "key3" });
 cache.RemoveByTag("tag1");
 ```
 
-
+### Logging
+```c#
+var cache = new RedisCacheProvider(); 
+cache.Logger = new MyLogger(); // MyLogger : IRedisCacheLogger
+```
 
 
 
