@@ -1,0 +1,27 @@
+﻿@model SampleMvcSite.Models.MyViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>title</title>
+    </head>
+    <body>
+        <div>
+            @Model.SetupTimeMs
+            <br/>
+            @Model.LoadTimeMs
+        </div>
+        @Model.Data.DateOfBirth <br/>
+        @Model.Data.Name @Model.Data.Surname<br/>
+        @foreach (var o in Model.Data.Other)
+        {
+            @o.Bar @o.Foo<br/>
+        }
+
+    </body>
+</html>
