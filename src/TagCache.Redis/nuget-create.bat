@@ -1,0 +1,2 @@
+C:\Windows\Microsoft.Net\Framework64\v4.0.30319\msbuild.exe TagCache.Redis.csproj /p:Configuration=Release
+nuget pack TagCache.Redis.csproj -IncludeReferencedProjects -Prop Configuration=Release -OutputDirectory ../../lib/nuget

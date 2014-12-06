@@ -25,3 +25,5 @@
 /src/SampleMvcSite/bin
 /src/SampleMvcSite/obj/Debug
 /src/packages
+/src/TagCache.Redis/bin/Release
+/src/TagCache.Redis/obj/Release
