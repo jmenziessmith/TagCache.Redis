@@ -15,6 +15,7 @@ TagCache.Redis
  * Retrieve cache items by tag
  * Remove all items by tag
  * Multiple Serialization options 
+ * Basic logging interface
  
 ### Roadmap
 * Expiry notification events
@@ -89,7 +90,11 @@ cache.Remove(new string[] { "key2", "key3" });
 cache.RemoveByTag("tag1");
 ```
 
-
+### Logging
+```c#
+var cache = new RedisCacheProvider(); 
+cache.Logger = new MyLogger(); // MyLogger : IRedisCacheLogger
+```
 
 
 
