@@ -16,85 +16,62 @@ namespace RedisEvents.ConsoleApp
 
 
         /// <summary>
-        /// This is a small application to test subscriptions in redis - which are required for automatic expiry of cache items
+        /// This is a small application to test event subscriptions in redis - which are required for automatic expiry of cache items
+        /// if subscriptions dont work try setting the redis config :
+        /// config set notify-keyspace-events Ex
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            System.Console.WriteLine("Start"); 
+            System.Console.WriteLine("Start");
 
             _conn = new BookSleeve.RedisConnection("localhost");
-            var c =_conn.Open();
+            var c = _conn.Open();
             c.Wait();
+            System.Console.WriteLine("Conn : " + _conn.State);
+
+            _conn.Keys.Remove(12, "_expireys");
+
+
             _subConn = new BookSleeve.RedisSubscriberConnection("localhost");
             var s = _subConn.Open();
             s.Wait();
-            
-            System.Console.WriteLine("Conn : " + _conn.State);
-            System.Console.WriteLine("SubConn : " + _subConn.State); 
-             
-            _subConn.MessageReceived += _subConn_MessageReceived;
-            _subConn.Error += _subConn_Error;
+            System.Console.WriteLine("SubConn : " + _subConn.State);
 
             channel = _conn.GetOpenSubscriberChannel();
             System.Threading.Thread.Sleep(100);
 
-            System.Console.WriteLine("Channel : " + channel.State); 
-            
+            System.Console.WriteLine("Channel : " + channel.State);
 
-            //channel.PatternSubscribe("workers:job-done:*", OnExecutionCompleted).Wait();
-            //channel.PatternSubscribe("*:*:*", OnExecutionCompleted).Wait();
-            channel.PatternSubscribe("*", OnExecutionCompleted).Wait();
-            //channel.PatternSubscribe("key.*", OnExecutionCompleted).Wait();
-            //channel.PatternSubscribe("key.2:*", OnExecutionCompleted).Wait();
-
-            channel.MessageReceived += channel_MessageReceived;
+            channel.PatternSubscribe("*:expired", OnExecutionCompleted).Wait();
 
             Console.WriteLine("Subscriptions : " + channel.SubscriptionCount);
 
 
-            _conn.Keys.Remove(12, "_expireys");
-
-            int i = 0;
-            while (true)
+            Set(1, 4);
+            System.Threading.Thread.Sleep((6 * 1000) );
+            if (received > 0)
             {
-                System.Threading.Thread.Sleep(1000);
-                Set(i++);
-                if (received > 0)
-                {
-                    Console.WriteLine("Subscriptions have worked");
-                }
-                else
-                {
-                    Console.WriteLine("Subscriptions have not worked yet");
-                }
-                Console.WriteLine(channel.State);
-
-
-                var exp = _conn.SortedSets.Range(12, "_expireys", 0, GetTime(0));
-                exp.Wait();
-                Console.WriteLine("Expireys: " + exp.Result.Count());
-
+                Console.WriteLine("Subscriptions have worked");
             }
+            else
+            {
+                Console.WriteLine("Subscriptions have not worked");
+            }
+
+            Console.ReadKey();
         }
+         
 
-        static void channel_MessageReceived(string arg1, byte[] arg2)
+        /// <summary>
+        /// Sets a value in redis and 
+        /// </summary>
+        /// <param name="i">used for the key and value</param>
+        public static void Set(int i, int expirySeconds)
         {
-            received++;
-            Console.WriteLine("msg");
-        }
-
-        public static void Set(int i)
-        {
-            var set = _conn.Strings.Set(12, "key." + i, "n"+i);
-            set.Wait();
-            var get = _conn.Strings.GetString(12, "key." + i);
-            _conn.Sets.Add(12, "_tags.tag1", "key." + i);
-            _conn.SortedSets.Add(12, "_expireys", "key." + i, GetTime(12));
-
-            get.Wait();
-            //_conn.Publish("key." + i, "set").Wait();
-            Console.Write("Set(" + get.Result  +")..."); 
+            var set = _conn.Strings.Set(12, "testing:key:val" + i, "n" + i, expirySeconds);
+            set.Wait();  
+            Console.WriteLine("Set testing:key:val{0} to {0}  and expire in {1} seconds" , i, expirySeconds); 
         }
 
         private static double GetTime(int addMs)
@@ -108,21 +85,12 @@ namespace RedisEvents.ConsoleApp
         public static void OnExecutionCompleted(string key, byte[] message)
         {
             received++;
-            System.Console.WriteLine("ExecutionComplete");
-        }
+            var msg = System.Text.Encoding.UTF8.GetString(message);
 
-        public static void _subConn_Error(object sender, BookSleeve.ErrorEventArgs e)
-        {
-            received++;
-            System.Console.WriteLine("Error");
+            System.Console.WriteLine("ExecutionComplete : " + key + " - " + msg);
         }
-
-        public static void _subConn_MessageReceived(string arg1, byte[] arg2)
-        {
-            received++;
-            System.Console.WriteLine("Message");
-        }
-
+         
+ 
 
 
     }

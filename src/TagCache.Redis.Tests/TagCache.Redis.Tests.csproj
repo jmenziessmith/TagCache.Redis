@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ExpiryTests.cs" />
     <Compile Include="RedisCacheProviderTests.cs" />
     <Compile Include="RedisClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

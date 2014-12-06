@@ -16,6 +16,9 @@ namespace TagCache.Redis
         private ISerializationProvider _serializer;
         private CacheConfiguration _cacheConfiguration;
 
+        // singleton dictionary<host,expirehandler>
+        private static Dictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
+
         public RedisCacheProvider() : this(new CacheConfiguration())
         {
             
@@ -23,12 +26,27 @@ namespace TagCache.Redis
 
         public RedisCacheProvider(CacheConfiguration configuration)
         {
-            // todo : the redis configuration needs to be injected
             _client = new RedisClient(configuration.RedisClientConfiguration.Host, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
             _serializer = configuration.Serializer;
             _tagManager = new RedisTagManager();
             _expiryManager = new RedisExpiryManager(configuration);
             _cacheItemProvider = new RedisCacheItemProvider(_serializer);
+
+            SetupExpireHandler(configuration, this);
+        }
+
+        private static void SetupExpireHandler(CacheConfiguration configuration, RedisCacheProvider redisCacheProvider)
+        {
+            if (_redisExpireHandlersByHost == null)
+            {
+                _redisExpireHandlersByHost = new Dictionary<string, RedisExpireHandler>();
+            }
+            if (!_redisExpireHandlersByHost.ContainsKey(configuration.RedisClientConfiguration.Host))
+            {
+                var handler = new RedisExpireHandler(configuration);
+                handler.RemoveMethod = redisCacheProvider.Remove;
+                _redisExpireHandlersByHost.Add(configuration.RedisClientConfiguration.Host, handler);
+            }
         }
 
         public T Get<T>(string key) where T : class
@@ -82,13 +100,13 @@ namespace TagCache.Redis
          
 
         public void Set<T>(T value, string key, DateTime expires, string tag = null) where T : class
-        {
+        { 
             var tags = string.IsNullOrEmpty(tag) ? null : new List<string> { tag };
             Set(value, key, expires, tags);
         }
 
         public void Set<T>(T value, string key, DateTime expires, List<string> tags) where T : class
-        {
+        { 
             if (_cacheItemProvider.Set(_client, value, key, expires, tags))
             {
                 _tagManager.UpdateTags(_client, key, tags);
@@ -139,7 +157,7 @@ namespace TagCache.Redis
         }
 
         /// <summary>
-        /// This should be called at regular intervals if the active version of redis does not support subscriptions to expiries
+        /// This should be called at regular intervals in case the active version of redis does not support subscriptions to expiries
         /// </summary>
         /// <returns></returns>
         public string[] RemoveExpiredKeys()

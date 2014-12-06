@@ -5,7 +5,7 @@ TagCache.Redis
 
 > To configure redis to allow detection of cache expiry, configure redis with
 >
->*config set notify-keyspace-events KEA*
+>*config set notify-keyspace-events Ex*
 >
 
 ##Features

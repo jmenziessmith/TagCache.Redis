@@ -1,42 +1,45 @@
 ﻿using System;
+using BookSleeve;
 
 namespace TagCache.Redis
 {
-    /*
     public class RedisExpireHandler
     {
         private CacheConfiguration _configuration;
+        private RedisSubscriberConnection _subscriber;
+        internal Action<string> RemoveMethod;
 
         public RedisExpireHandler(CacheConfiguration configuration)
         {
-            
+            _configuration = configuration; 
+            SubscribeToExpiryEvents();
         }
 
         public DateTime LastExpiredDate { get; set; }
 
-        public void HandleExpiry(string key)
-        {
-            var cacheProvider = new RedisCacheProvider();
-            cacheProvider.Remove(key);
-        }
+        
 
-        void subscriber_MessageReceived(string arg1, byte[] arg2)
+        void SubscriberMessageReceived(string e, byte[] message)
         {
-            var x = arg1;
-            LastExpiredDate = DateTime.Now;
+            if (e.EndsWith("expired"))
+            {   
+                var key = System.Text.Encoding.UTF8.GetString(message);
+                //if (key.StartsWith(_configuration.RootNameSpace))
+                //{
+                    RemoveMethod(key);   
+                //}
+            }
         }
 
         public void SubscribeToExpiryEvents()
         {
-            var subscriber = new RedisSubscriberConnectionManager(_configuration.RedisClientConfiguration.Host).GetConnection(true);
+            _subscriber = new RedisSubscriberConnectionManager(_configuration.RedisClientConfiguration.Host).GetConnection(true);
 
-            subscriber.Subscribe("my.key.expire");
-            subscriber.PatternSubscribe("*"); 
+            _subscriber.PatternSubscribe("*:expired");
 
-            subscriber.MessageReceived += subscriber_MessageReceived; 
-
+            _subscriber.MessageReceived += SubscriberMessageReceived; 
         } 
 
     }
-    */
+    
 }
