@@ -18,7 +18,6 @@ TagCache.Redis
  * Basic logging interface
  
 ### Roadmap
-* Expiry notification events
 * Multiplexed caching (sync with in memory cache)
 * Upgrade from booksleeve to StackExchange.Redis 
 
