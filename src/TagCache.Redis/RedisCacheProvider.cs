@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TagCache.Redis.Interfaces;
 
@@ -21,15 +20,15 @@ namespace TagCache.Redis
 
         // singleton dictionary<host,expirehandler> 
         private static ConcurrentDictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
-
-        public RedisCacheProvider() : this(new CacheConfiguration())
+        
+        public RedisCacheProvider(RedisConnectionManager connectionManager) : this(new CacheConfiguration(connectionManager))
         {
-            
+        
         }
 
         public RedisCacheProvider(CacheConfiguration configuration)
         {
-            _client = new RedisClient(configuration.RedisClientConfiguration.Host, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
+            _client = new RedisClient(configuration.RedisClientConfiguration.RedisConnectionManagerConnectionManager, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
             _serializer = configuration.Serializer;
             _tagManager = new RedisTagManager();
             _expiryManager = new RedisExpiryManager(configuration);

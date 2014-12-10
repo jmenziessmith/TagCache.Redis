@@ -10,7 +10,7 @@ namespace TagCache.Redis.Tests
 
         private RedisClient newRedisClient()
         {
-            return new RedisClient(_redisHost, _redisDB, 5000);
+            return new RedisClient(new RedisConnectionManager("localhost"), _redisDB, 5000);
         }
          
 
