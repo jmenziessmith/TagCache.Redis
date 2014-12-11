@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis
@@ -61,7 +62,7 @@ namespace TagCache.Redis
                 Value = value,
                 Key = key,
                 Expires = expires,
-                Tags = tags, 
+                Tags = tags == null ? null : tags.ToList(), 
             };
         }
 

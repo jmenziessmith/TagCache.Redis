@@ -130,7 +130,7 @@ namespace TagCache.Redis
             Set(key, value, expires, tags);
         }
 
-        public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags = null)
+        public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags)
         {
             Log("Set", key, null);
 
