@@ -29,6 +29,7 @@ namespace SampleMvcSite.Controllers
         // GET: /Home/
 
         public static ListLogger Logger { get; set; }
+        public static readonly RedisConnectionManager RedisConnection = new RedisConnectionManager();
 
 
         public ActionResult Index()
@@ -41,9 +42,9 @@ namespace SampleMvcSite.Controllers
             var stopwatch = new Stopwatch();
 
             var result = new MyViewModel();
-
+            
             stopwatch.Start();
-            var cache = new RedisCacheProvider();
+            var cache = new RedisCacheProvider(RedisConnection);
             cache.Logger = Logger;
             stopwatch.Stop();
             result.SetupTimeMs = stopwatch.ElapsedMilliseconds;

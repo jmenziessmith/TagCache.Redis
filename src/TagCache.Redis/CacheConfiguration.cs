@@ -1,13 +1,14 @@
-﻿using TagCache.Redis.Interfaces;
+﻿using StackExchange.Redis;
+using TagCache.Redis.Interfaces;
 using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis
 {
     public class CacheConfiguration
     {
-        public CacheConfiguration()
+        public CacheConfiguration(RedisConnectionManager connectionManager)
         {
-            RedisClientConfiguration = new RedisClientConfiguration();
+            RedisClientConfiguration = new RedisClientConfiguration(connectionManager);
         }
 
         internal const int MinutesToRemoveAfterExpiry = 15;
@@ -41,6 +42,8 @@ namespace TagCache.Redis
 
     public class RedisClientConfiguration
     {
+        private ConnectionMultiplexer _connection;
+
         public const string _DefaultHost = "localhost";
         public const int _DefaultDbNo = 0;
         public const int _DefaultTimeoutMilliseconds = 1000;
@@ -62,12 +65,18 @@ namespace TagCache.Redis
 
 
         private int? _timeoutMilliseconds;
+
+        public RedisClientConfiguration(RedisConnectionManager redisConnectionManager)
+        {
+            RedisConnectionManagerConnectionManager = redisConnectionManager;
+        }
+
         public int TimeoutMilliseconds
         {
             get { return _timeoutMilliseconds ?? _DefaultTimeoutMilliseconds; }
             set { _timeoutMilliseconds = value; }
         }
 
+        public RedisConnectionManager RedisConnectionManagerConnectionManager { get; set; }
     }
-
 }

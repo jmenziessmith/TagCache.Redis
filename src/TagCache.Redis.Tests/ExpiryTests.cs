@@ -12,14 +12,15 @@ namespace TagCache.Redis.Tests
     {
         private RedisClient newRedisClient(RedisClientConfiguration config)
         {
-            return new RedisClient(config.Host, config.DbNo, config.TimeoutMilliseconds);
+            return new RedisClient(config.RedisConnectionManagerConnectionManager);
         }
 
         [Test]
         public void ItemExpires_RemovedFromCache()
         {
+            var redis = new RedisConnectionManager();
             // this is just testing the built in expiry
-            var config = new CacheConfiguration();
+            var config = new CacheConfiguration(redis);
 
             var cache = new RedisCacheProvider(config); 
             cache.Logger = new TestRedisLogger();
@@ -59,7 +60,8 @@ namespace TagCache.Redis.Tests
             // this is testing that when expiry happens, the events kick in and remove the tags
             // see RedisExpireHandler
 
-            var config = new CacheConfiguration();
+            var redis = new RedisConnectionManager();
+            var config = new CacheConfiguration(redis);
 
             var cache = new RedisCacheProvider(config);
             var client = newRedisClient(config.RedisClientConfiguration);
