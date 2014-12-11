@@ -8,16 +8,17 @@ namespace TagCache.Redis
 {
     public class RedisClient
     {
-        private const bool _IsRedisExpiryEnabled = true;
+        private const bool _isRedisExpiryEnabled = true;
         private const string _rootName = "_redisCache";
 
-        
-        int _db;
-        int _timeout = 100;
-        private RedisConnectionManager _connectionManager;
+
+        readonly int _db;
+        readonly int _timeout = 100;
+        private readonly RedisConnectionManager _connectionManager;
 
 
-        public RedisClient(RedisConnectionManager connectionManager, int db, int timeout) : this(connectionManager)
+        public RedisClient(RedisConnectionManager connectionManager, int db, int timeout)
+            : this(connectionManager)
         {
             _db = db;
             _timeout = timeout;
@@ -46,7 +47,7 @@ namespace TagCache.Redis
         private async Task<bool> SetAsync(string key, string value, int expirySeconds)
         {
             var conn = _connectionManager.GetConnection();
-            await conn.GetDatabase(_db).StringSetAsync(key, value, _IsRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
+            await conn.GetDatabase(_db).StringSetAsync(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
 
             return true;
 
@@ -109,7 +110,7 @@ namespace TagCache.Redis
             return conn.GetDatabase(_db).SetMembers(TagKeysListKey(tag)).Select(r => !r.IsNullOrEmpty ? (string)r : null).ToArray();
         }
 
-        public void AddKeyToTags(string key, List<string> tags)
+        public void AddKeyToTags(string key, IEnumerable<string> tags)
         {
             var addTask = AddKeyToTagsAsync(key, tags);
             addTask.Wait(_timeout);
@@ -123,9 +124,10 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> AddKeyToTagsAsync(string key, List<string> tags)
+        private async Task<bool> AddKeyToTagsAsync(string key, IEnumerable<string> tags)
         {
-            if (key != null && tags != null && tags.Count > 0)
+            var enumerable = tags as string[] ?? tags.ToArray();
+            if (key != null && tags != null && enumerable.Any())
             {
 
                 var conn = _connectionManager.GetConnection();
@@ -134,16 +136,16 @@ namespace TagCache.Redis
                                 .GetDatabase(_db)
                                 .CreateTransaction();
 
-                foreach (var tag in tags)
+                foreach (var tag in enumerable)
                 {
-                    trans.SetAddAsync(TagKeysListKey(tag), key);
+                    trans.SetAddAsync(TagKeysListKey(tag), key); //Don't await as tasks are only executed when transaction is executed
                 }
                 await trans.ExecuteAsync().ConfigureAwait(false);
             }
             return true;
         }
 
-        public void RemoveKeyFromTags(string key, List<string> tags)
+        public void RemoveKeyFromTags(string key, IEnumerable<string> tags)
         {
             var addTask = RemoveKeyFromTagsAsync(key, tags);
             addTask.Wait(_timeout);
@@ -157,9 +159,9 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> RemoveKeyFromTagsAsync(string key, List<string> tags)
+        private async Task<bool> RemoveKeyFromTagsAsync(string key, IEnumerable<string> tags)
         {
-            if (tags != null && tags.Count > 0)
+            if (tags != null && tags.Any())
             {
                 var conn = _connectionManager.GetConnection();
                 var trans = conn.GetDatabase(_db).CreateTransaction();
@@ -174,7 +176,7 @@ namespace TagCache.Redis
         }
 
 
-        public void SetTagsForKey(string key, List<string> tags)
+        public void SetTagsForKey(string key, IEnumerable<string> tags)
         {
             var addTask = SetTagsForKeyAsync(key, tags);
             addTask.Wait();
@@ -188,7 +190,7 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> SetTagsForKeyAsync(string key, List<string> tags)
+        private async Task<bool> SetTagsForKeyAsync(string key, IEnumerable<string> tags)
         {
             if (key != null)
             {
@@ -197,7 +199,7 @@ namespace TagCache.Redis
 
                 trans.KeyDeleteAsync(KeyTagsListKey(key)); // empty list
 
-                if (tags != null && tags.Count > 0)
+                if (tags != null && tags.Any())
                 {
                     trans.SetAddAsync(KeyTagsListKey(key), tags.Select(t => (RedisValue)t).ToArray()); // add each tag
                 }
@@ -307,7 +309,7 @@ namespace TagCache.Redis
         public async Task<bool> RemoveTimeSetAsync(string setKey, string[] keys)
         {
             var conn = _connectionManager.GetConnection();
-            var result = conn.GetDatabase(_db).SortedSetRemove(setKey, keys.Select(k =>(RedisValue)k).ToArray());
+            var result = conn.GetDatabase(_db).SortedSetRemove(setKey, keys.Select(k => (RedisValue)k).ToArray());
             return true;
         }
 
@@ -329,9 +331,9 @@ namespace TagCache.Redis
             var conn = _connectionManager.GetConnection();
             var timeAsRank = Helpers.TimeToRank(maxDate);
             var keys = await conn.GetDatabase(_db).SortedSetRangeByScoreAsync(setKey, start: 0, stop: timeAsRank);
-            return keys.Select(k =>  k.ToString()).ToArray();
+            return keys.Select(k => k.ToString()).ToArray();
         }
-        
+
         public void RemoveKey(string key)
         {
             var conn = _connectionManager.GetConnection();
