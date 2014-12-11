@@ -40,7 +40,7 @@ namespace TagCache.Redis
             return result;
         }
 
-        public bool Set<T>(RedisClient client, T value, string key, DateTime expires, List<string> tags)
+        public bool Set<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
         {
             if (value != null)
             {
@@ -54,7 +54,7 @@ namespace TagCache.Redis
         }
 
 
-        private RedisCacheItem Create(object value, string key, DateTime expires, List<string> tags)
+        private RedisCacheItem Create(object value, string key, DateTime expires, IEnumerable<string> tags)
         {
             return new RedisCacheItem
             {

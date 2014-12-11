@@ -15,19 +15,18 @@ namespace TagCache.Redis.Tests
 
         private RedisClient newRedisClient()
         {
-            return new RedisClient(_redisHost, _redisDB, 5000);
+            return new RedisClient(new RedisConnectionManager(_redisHost), _redisDB, 5000);
         }
-
-
 
         [Test]
         public void Ctor_Configuration__Succeeds()
         {
-            var config = new CacheConfiguration()
+            var redis = new RedisConnectionManager(_redisHost);
+            var config = new CacheConfiguration(redis)
             {
                 RootNameSpace = "_TestRootNamespace",
                 Serializer =  new BinarySerializationProvider(),
-                RedisClientConfiguration = new RedisClientConfiguration()
+                RedisClientConfiguration = new RedisClientConfiguration(redis)
                 {
                     Host = _redisHost,
                     DbNo = _redisDB,
@@ -44,15 +43,14 @@ namespace TagCache.Redis.Tests
             // no exception
         }
 
-
-
         [ExpectedException]
         [Test]
         public void Ctor_Configuration__Fails()
         {
-            var config = new CacheConfiguration()
+            var redis = new RedisConnectionManager("localhost");
+            var config = new CacheConfiguration(redis)
                          {
-                             RedisClientConfiguration = new RedisClientConfiguration()
+                             RedisClientConfiguration = new RedisClientConfiguration(redis)
                                                         {
                                                             Host = "nohost",
                                                             TimeoutMilliseconds = 500
@@ -71,7 +69,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Set_String_Succeeds()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
             DateTime expires = new DateTime(2099, 12, 11); 
@@ -83,7 +82,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_MissingKey_ReturnsNull()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:NoValueHere." + DateTime.Now.Ticks;
 
@@ -95,7 +95,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_AddedKey_ReturnsValue()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -112,7 +113,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_AddedObject_ReturnsValue()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             var value = new TestObject()
@@ -136,7 +138,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Remove_AddedKey_ReturnsNull()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -187,7 +190,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_ReturnsNull()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -203,7 +207,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_RemovesFromCache()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -219,7 +224,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void Get_ExpiredDate_RemovesTags()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -241,7 +247,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void GetByTag_SingleItemManyTags_ReturnsSingleValue()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -260,7 +267,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void GetByTag_ManyItemSingleTag_ReturnsManyValues()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key1 = "TagCacheTests:Add1";
             string key2 = "TagCacheTests:Add2";
@@ -286,7 +294,8 @@ namespace TagCache.Redis.Tests
         [Test]
         public void RemoveByTag_ManyItemSingleTag_ReturnsNoValues()
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new TestRedisLogger();
             string key1 = "TagCacheTests:Add1";
             string key2 = "TagCacheTests:Add2";

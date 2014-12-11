@@ -1,46 +1,39 @@
 ﻿using System;
-using BookSleeve;
+using StackExchange.Redis;
 
 namespace TagCache.Redis
 {
     public class RedisExpireHandler
     {
         private CacheConfiguration _configuration;
-        private RedisSubscriberConnection _subscriber;
+        private ISubscriber _subscriber;
         internal Action<string> RemoveMethod;
         public Action<string, string, string> LogMethod { get; set; }
 
         public RedisExpireHandler(CacheConfiguration configuration)
         {
-            _configuration = configuration; 
+            _configuration = configuration;
             SubscribeToExpiryEvents();
         }
 
         public DateTime LastExpiredDate { get; set; }
 
-
-        void SubscriberMessageReceived(string e, byte[] message)
+        void SubscriberMessageReceived(RedisChannel redisChannel, RedisValue value)
         {
-            if (e.EndsWith("expired"))
-            {   
-                var key = System.Text.Encoding.UTF8.GetString(message);
-                //if (key.StartsWith(_configuration.RootNameSpace))
-                //{
-                    LogMethod("Expired", key, null);   
-                    RemoveMethod(key);   
-                //}
+            if (((string)redisChannel).EndsWith("expired"))
+            {
+                var key = System.Text.Encoding.UTF8.GetString(value);
+
+                LogMethod("Expired", key, null);
+                RemoveMethod(key);
             }
         }
 
         public void SubscribeToExpiryEvents()
         {
-            _subscriber = new RedisSubscriberConnectionManager(_configuration.RedisClientConfiguration.Host).GetConnection(true);
-
-            _subscriber.PatternSubscribe("*:expired");
-
-            _subscriber.MessageReceived += SubscriberMessageReceived; 
-        } 
-
+            _subscriber = new RedisSubscriberConnectionManager(_configuration.RedisClientConfiguration.RedisConnectionManagerConnectionManager).GetConnection();
+            _subscriber.Subscribe(new RedisChannel("*:expired", RedisChannel.PatternMode.Pattern), SubscriberMessageReceived);
+        }
     }
-    
+
 }

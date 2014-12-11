@@ -6,10 +6,10 @@ namespace TagCache.Redis.Interfaces
 {
     public interface IRedisCacheProvider
     {
-        T Get<T>(string key) where T : class;
-        List<T> GetByTag<T>(string tag) where T : class;
-        void Set<T>(string key, T value, DateTime expires, string tag = null) where T : class;
-        void Set<T>(string key, T value, DateTime expires, List<string> tags) where T : class;
+        T Get<T>(string key);
+        List<T> GetByTag<T>(string tag);
+        void Set<T>(string key, T value, DateTime expires, string tag = null);
+        void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags);
         void Remove(string key);
         void Remove(IEnumerable<string> keys);
         void Remove(string[] keys);

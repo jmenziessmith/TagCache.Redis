@@ -2,28 +2,25 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/src/packages/Redis-64.2.8.17
-/src/packages/BookSleeve.1.3.41
-/src/packages/Newtonsoft.Json.5.0.8
-/src/TagCache.Redis.v12.suo
-/src/TagCache.Redis.suo
-/src/RedisEvents.ConsoleApp/obj/Debug
-/src/RedisEvents.ConsoleApp/bin/Debug
-/src/TagCache.Redis/obj/Debug
-/src/TagCache.Redis/bin/Debug
-/src/TagCache.Redis.Tests/obj/Debug
-/src/TagCache.Redis.Tests/bin/Debug
-/src/packages/NUnit.2.6.3/lib
-/src/packages/NUnit.2.6.3/lib/nunit.framework.dll
-/src/packages/NUnit.2.6.3/lib/nunit.framework.xml
-/src/packages/NUnit.2.6.3/license.txt
-/src/packages/NUnit.2.6.3/NUnit.2.6.3.nupkg
-/src/packages/NUnit.2.6.3/NUnit.2.6.3.nuspec
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+
+# User-specific files
+*.suo
 *.user
-/src/RedisCacheLogMonitor.ConsoleApp/bin/Debug
-/src/RedisCacheLogMonitor.ConsoleApp/obj/Debug
-/src/SampleMvcSite/bin
-/src/SampleMvcSite/obj/Debug
-/src/packages
-/src/TagCache.Redis/bin/Release
-/src/TagCache.Redis/obj/Release
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/

@@ -1,34 +1,19 @@
-﻿using System;
-using System.Diagnostics;
-using BookSleeve;
+﻿using StackExchange.Redis;
 
 namespace TagCache.Redis
 {
-    public class RedisSubscriberConnectionManager : IDisposable
+    public class RedisSubscriberConnectionManager
     {
-        private volatile RedisSubscriberConnection _connection;
+        private volatile ISubscriber _connection;
         private readonly object _connectionLock = new object();
+        private RedisConnectionManager _connectionManager;
 
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public int IOTimeout { get; set; }
-        public string Password { get; set; }
-        public int MaxUnsent { get; set; }
-        public bool AllowAdmin { get; set; }
-        public int SyncTimeout { get; set; }
-
-        public RedisSubscriberConnectionManager(string host, int port = 6379, int ioTimeout = -1, string password = null, int maxUnsent = 2147483647, bool allowAdmin = false, int syncTimeout = 10000)
+        public RedisSubscriberConnectionManager(RedisConnectionManager connectionManager)
         {
-            Host = host;
-            Port = port;
-            IOTimeout = ioTimeout;
-            Password = password;
-            MaxUnsent = maxUnsent;
-            AllowAdmin = allowAdmin;
-            SyncTimeout = syncTimeout;
+            _connectionManager = connectionManager;
         }
 
-        public RedisSubscriberConnection GetConnection(bool waitOnOpen = false)
+        public ISubscriber GetConnection()
         {
             var connection = _connection;
 
@@ -38,12 +23,7 @@ namespace TagCache.Redis
                 {
                     if (_connection == null)
                     {
-                        _connection = new RedisSubscriberConnection(Host, Port, IOTimeout, Password, MaxUnsent); 
-
-                        _connection.Shutdown += ConnectionOnShutdown;
-                        var openTask = _connection.Open();
-
-                        if (waitOnOpen) { _connection.Wait(openTask); }
+                        _connection = _connectionManager.GetConnection().GetSubscriber();
                     }
 
                     connection = _connection;
@@ -51,39 +31,6 @@ namespace TagCache.Redis
             }
 
             return connection;
-        }
-
-        private void ConnectionOnShutdown(object sender, ErrorEventArgs errorEventArgs)
-        {
-            lock (_connectionLock)
-            {
-                _connection.Shutdown -= ConnectionOnShutdown;
-                _connection = null;
-            }
-        }
-
-        public void Reset(bool abort = false)
-        {
-            lock (_connectionLock)
-            {
-                if (_connection != null)
-                {
-                    _connection.Close(abort);
-                    _connection = null;
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-            lock (_connectionLock)
-            {
-                if (_connection != null)
-                {
-                    _connection.Dispose();
-                    _connection = null;
-                }
-            }
         }
     }
 }

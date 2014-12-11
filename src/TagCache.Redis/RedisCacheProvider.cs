@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TagCache.Redis.Interfaces;
 
@@ -22,14 +21,15 @@ namespace TagCache.Redis
         // singleton dictionary<host,expirehandler> 
         private static ConcurrentDictionary<string, RedisExpireHandler> _redisExpireHandlersByHost;
 
-        public RedisCacheProvider() : this(new CacheConfiguration())
+        public RedisCacheProvider(RedisConnectionManager connectionManager)
+            : this(new CacheConfiguration(connectionManager))
         {
-            
+
         }
 
         public RedisCacheProvider(CacheConfiguration configuration)
         {
-            _client = new RedisClient(configuration.RedisClientConfiguration.Host, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
+            _client = new RedisClient(configuration.RedisClientConfiguration.RedisConnectionManagerConnectionManager, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
             _serializer = configuration.Serializer;
             _tagManager = new RedisTagManager();
             _expiryManager = new RedisExpiryManager(configuration);
@@ -68,22 +68,23 @@ namespace TagCache.Redis
             }
         }
 
-        public T Get<T>(string key) where T : class
-        { 
+        public T Get<T>(string key)
+        {
             var cacheItem = _cacheItemProvider.Get(_client, key);
             if (cacheItem != null)
             {
                 if (CacheItemIsValid(cacheItem))
                 {
                     Log("Get", key, "Found");
-                    return cacheItem.Value as T;
+
+                    return (T)cacheItem.Value;
                 }
             }
             Log("Get", key, "Not Found");
             return default(T);
         }
 
-        public List<T> GetByTag<T>(string tag) where T : class
+        public List<T> GetByTag<T>(string tag)
         {
             var keys = _tagManager.GetKeysForTag(_client, tag);
             if (keys != null && keys.Length > 0)
@@ -96,10 +97,10 @@ namespace TagCache.Redis
                 {
                     if (CacheItemIsValid(item))
                     {
-                        var value = item.Value as T;
-                        if (value!=null)
+                        var value = item.Value;
+                        if (value != null)
                         {
-                            result.Add(value);
+                            result.Add((T)value);
                         }
                     }
                 }
@@ -123,26 +124,27 @@ namespace TagCache.Redis
         }
 
 
-        public void Set<T>(string key, T value, DateTime expires, string tag = null) where T : class
-        {  
+        public void Set<T>(string key, T value, DateTime expires, string tag = null)
+        {
             var tags = string.IsNullOrEmpty(tag) ? null : new List<string> { tag };
-            Set(key, value, expires, tags); 
+            Set(key, value, expires, tags);
         }
 
-        public void Set<T>(string key, T value, DateTime expires, List<string> tags) where T : class
-        { 
+        public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags = null)
+        {
             Log("Set", key, null);
+
             if (_cacheItemProvider.Set(_client, value, key, expires, tags))
             {
                 _tagManager.UpdateTags(_client, key, tags);
-            } 
+            }
         }
 
 
         public void Remove(string key)
         {
             Log("Remove", key, null);
-            Remove(new[]{key});
+            Remove(new[] { key });
         }
 
         public void RemoveByTag(string tag)
@@ -160,7 +162,7 @@ namespace TagCache.Redis
             Remove(keys.ToArray());
         }
 
-        public void Remove(string[] keys) 
+        public void Remove(string[] keys)
         {
             _client.Remove(keys);
             _tagManager.RemoveTags(_client, keys);
@@ -172,7 +174,7 @@ namespace TagCache.Redis
             _client.Remove(item.Key);
             _tagManager.RemoveTags(_client, item);
         }
-        
+
         public void Remove(RedisCacheItem item)
         {
             var task = Task.Run(() => RemoveAsync(item));

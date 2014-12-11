@@ -13,7 +13,8 @@ namespace RedisCacheLogMonitor.ConsoleApp
     {
         static void Main(string[] args)
         {
-            var cache = new RedisCacheProvider();
+            var redis = new RedisConnectionManager();
+            var cache = new RedisCacheProvider(redis);
             cache.Logger = new ConsoleLogger();
 
             while (true)
