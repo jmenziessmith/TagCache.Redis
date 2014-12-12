@@ -13,8 +13,8 @@ namespace TagCache.Redis.Interfaces
         void Remove(string key);
         void Remove(IEnumerable<string> keys);
         void Remove(string[] keys);
-        Task RemoveAsync(RedisCacheItem item);
-        void Remove(RedisCacheItem item);
+        Task RemoveAsync(IRedisCacheItem item);
+        void Remove(IRedisCacheItem item);
         void RemoveByTag(string tag);
 
         /// <summary>

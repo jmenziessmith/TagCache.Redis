@@ -36,7 +36,7 @@ namespace TagCache.Redis
         /// </summary>
         /// <param name="client"></param>
         /// <param name="key"></param>
-        public void UpdateTags(RedisClient client, RedisCacheItem cacheItem)
+        public void UpdateTags(RedisClient client, IRedisCacheItem cacheItem)
         {
             SetTagsForKey(client, cacheItem);
             AddKeyToTags(client, cacheItem);
@@ -57,7 +57,7 @@ namespace TagCache.Redis
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cacheItem"></param>
-        public void SetTagsForKey(RedisClient client, RedisCacheItem cacheItem)
+        public void SetTagsForKey(RedisClient client, IRedisCacheItem cacheItem)
         {
             if (cacheItem != null)
             {
@@ -74,7 +74,7 @@ namespace TagCache.Redis
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cacheItem"></param>
-        public void AddKeyToTags(RedisClient client, RedisCacheItem cacheItem)
+        public void AddKeyToTags(RedisClient client, IRedisCacheItem cacheItem)
         {
             if (cacheItem != null)
             {
@@ -85,14 +85,14 @@ namespace TagCache.Redis
                 }
             }
         }
-        
+
 
         /// <summary>
         /// Removes the tags from the key list and the key from the tags list
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="key"></param>
-        public void RemoveTags(RedisClient client, RedisCacheItem cacheItem)
+        /// <param name="client">The client.</param>
+        /// <param name="cacheItem">The cache item.</param>
+        public void RemoveTags(RedisClient client, IRedisCacheItem cacheItem)
         {
             RemoveKeyFromTags(client, cacheItem);
             RemoveTagsForKey(client, cacheItem);
@@ -114,7 +114,7 @@ namespace TagCache.Redis
             foreach (var key in keys)
             {
                 var tags = GetTagsForKey(client, key);
-                var cacheItem = new RedisCacheItem()
+                var cacheItem = new RedisCacheItem
                 {
                     Key = key,
                     Tags = tags.ToList()
@@ -130,7 +130,7 @@ namespace TagCache.Redis
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cacheItem"></param>
-        public void RemoveKeyFromTags(RedisClient client, RedisCacheItem cacheItem)
+        public void RemoveKeyFromTags(RedisClient client, IRedisCacheItem cacheItem)
         {
             if (cacheItem != null)
             {
@@ -147,7 +147,7 @@ namespace TagCache.Redis
         /// </summary>
         /// <param name="client"></param>
         /// <param name="cacheItem"></param>
-        public void RemoveTagsForKey(RedisClient client, RedisCacheItem cacheItem)
+        public void RemoveTagsForKey(RedisClient client, IRedisCacheItem cacheItem)
         {
             if (cacheItem != null)
             {

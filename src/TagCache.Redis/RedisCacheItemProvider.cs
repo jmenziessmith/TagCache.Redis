@@ -14,24 +14,24 @@ namespace TagCache.Redis
             _serializer = serializer;
         }
 
-        public RedisCacheItem Get(RedisClient client, string key)
+        public RedisCacheItem<T> Get<T>(RedisClient client, string key)
         {
             var cacheString = client.Get(key);
             if (!string.IsNullOrEmpty(cacheString))
             {
-                return _serializer.Deserialize<RedisCacheItem>(cacheString);
+                return _serializer.Deserialize<RedisCacheItem<T>>(cacheString.Value);
             }
             return null;
         }
 
 
-        public List<RedisCacheItem> GetMany(RedisClient client, string[] keys)
+        public List<RedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
         {
-            var result = new List<RedisCacheItem>();
+            var result = new List<RedisCacheItem<T>>();
 
             foreach (var key in keys)
             {
-                var r = Get(client, key);
+                var r = Get<T>(client, key);
                 if (r != null)
                 {
                     result.Add(r);
@@ -55,9 +55,9 @@ namespace TagCache.Redis
         }
 
 
-        private RedisCacheItem Create(object value, string key, DateTime expires, IEnumerable<string> tags)
+        private RedisCacheItem<T> Create<T>(T value, string key, DateTime expires, IEnumerable<string> tags)
         {
-            return new RedisCacheItem
+            return new RedisCacheItem<T>
             {
                 Value = value,
                 Key = key,

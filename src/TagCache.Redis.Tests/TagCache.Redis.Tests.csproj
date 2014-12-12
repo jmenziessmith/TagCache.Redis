@@ -38,6 +38,10 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.0.316.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.371\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -55,11 +59,16 @@
   <ItemGroup>
     <Compile Include="ExpiryTests.cs" />
     <Compile Include="Helpers\TestRedisLogger.cs" />
+    <Compile Include="RedisCacheProviderBinaryTests.cs" />
+    <Compile Include="RedisCacheProviderJsonTests.cs" />
+    <Compile Include="RedisCacheProviderProtoBufTests.cs" />
     <Compile Include="RedisCacheProviderTests.cs" />
+    <Compile Include="RedisCacheProviderXmlTests.cs" />
     <Compile Include="RedisClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\BinarySerializationProviderTests.cs" />
     <Compile Include="Serialization\JsonSerializationProviderTests.cs" />
+    <Compile Include="Serialization\ProtoBufSerializationProviderTests.cs" />
     <Compile Include="Serialization\XmlSerializationProviderTests.cs" />
     <Compile Include="TestObject.cs" />
   </ItemGroup>
