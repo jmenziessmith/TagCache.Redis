@@ -61,12 +61,14 @@
     <Compile Include="Helpers\TestRedisLogger.cs" />
     <Compile Include="RedisCacheProviderBinaryTests.cs" />
     <Compile Include="RedisCacheProviderJsonTests.cs" />
+    <Compile Include="RedisCacheProviderProtoBufTests.cs" />
     <Compile Include="RedisCacheProviderTests.cs" />
     <Compile Include="RedisCacheProviderXmlTests.cs" />
     <Compile Include="RedisClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\BinarySerializationProviderTests.cs" />
     <Compile Include="Serialization\JsonSerializationProviderTests.cs" />
+    <Compile Include="Serialization\ProtoBufSerializationProviderTests.cs" />
     <Compile Include="Serialization\XmlSerializationProviderTests.cs" />
     <Compile Include="TestObject.cs" />
   </ItemGroup>
