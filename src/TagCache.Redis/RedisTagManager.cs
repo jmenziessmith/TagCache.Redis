@@ -47,7 +47,7 @@ namespace TagCache.Redis
             var cacheItem = new RedisCacheItem
             {
                 Key = key,
-                Tags = tags
+                Tags = tags == null ? null :  tags.ToList()
             };
             UpdateTags(client, cacheItem);
         }

@@ -15,7 +15,7 @@ namespace TagCache.Redis.Tests
 
         private RedisClient newRedisClient()
         {
-            return new RedisClient(new RedisConnectionManager(_redisHost), _redisDB, 5000);
+            return new RedisClient(new RedisConnectionManager(_redisHost), _redisDB, 5);
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace TagCache.Redis.Tests
                 {
                     Host = _redisHost,
                     DbNo = _redisDB,
-                    TimeoutMilliseconds = 500
+                    TimeoutMilliseconds = 50
                 }
             };
             var cache = new RedisCacheProvider(config);
