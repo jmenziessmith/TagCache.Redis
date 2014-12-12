@@ -3,7 +3,7 @@ using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis.Tests
 {
-    [TestFixture]
+    [TestFixture(Category = "JSON tests")]
     public class RedisCacheProviderJsonTests : RedisCacheProviderTests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)

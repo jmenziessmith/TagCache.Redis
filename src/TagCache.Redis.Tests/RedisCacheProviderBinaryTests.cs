@@ -3,7 +3,7 @@ using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis.Tests
 {
-    [TestFixture]
+    [TestFixture(Category = "Binary Serializer tests")]
     public class RedisCacheProviderBinaryTests : RedisCacheProviderTests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
