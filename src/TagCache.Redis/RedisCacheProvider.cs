@@ -70,14 +70,14 @@ namespace TagCache.Redis
 
         public T Get<T>(string key)
         {
-            var cacheItem = _cacheItemProvider.Get(_client, key);
+            var cacheItem = _cacheItemProvider.Get<T>(_client, key);
             if (cacheItem != null)
             {
                 if (CacheItemIsValid(cacheItem))
                 {
                     Log("Get", key, "Found");
 
-                    return (T)cacheItem.Value;
+                    return cacheItem.Value;
                 }
             }
             Log("Get", key, "Not Found");
@@ -89,7 +89,7 @@ namespace TagCache.Redis
             var keys = _tagManager.GetKeysForTag(_client, tag);
             if (keys != null && keys.Length > 0)
             {
-                var items = _cacheItemProvider.GetMany(_client, keys);
+                var items = _cacheItemProvider.GetMany<T>(_client, keys);
 
                 var result = new List<T>();
 
@@ -100,7 +100,7 @@ namespace TagCache.Redis
                         var value = item.Value;
                         if (value != null)
                         {
-                            result.Add((T)value);
+                            result.Add(value);
                         }
                     }
                 }
@@ -169,13 +169,13 @@ namespace TagCache.Redis
             _expiryManager.RemoveKeyExpiry(_client, keys.ToArray());
         }
 
-        public async Task RemoveAsync(RedisCacheItem item)
+        public async Task RemoveAsync(IRedisCacheItem item)
         {
             _client.Remove(item.Key);
             _tagManager.RemoveTags(_client, item);
         }
 
-        public void Remove(RedisCacheItem item)
+        public void Remove(IRedisCacheItem item)
         {
             var task = Task.Run(() => RemoveAsync(item));
             task.Wait();
