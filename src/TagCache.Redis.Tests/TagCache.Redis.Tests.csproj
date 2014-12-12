@@ -38,6 +38,10 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="StackExchange.Redis.StrongName, Version=1.0.316.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.371\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
@@ -69,6 +73,7 @@
     <Compile Include="Serialization\BinarySerializationProviderTests.cs" />
     <Compile Include="Serialization\JsonSerializationProviderTests.cs" />
     <Compile Include="Serialization\ProtoBufSerializationProviderTests.cs" />
+    <Compile Include="Serialization\SerializationProviderTestsBase.cs" />
     <Compile Include="Serialization\XmlSerializationProviderTests.cs" />
     <Compile Include="TestObject.cs" />
   </ItemGroup>

@@ -1,54 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
+using TagCache.Redis.Interfaces;
 using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis.Tests.Serialization
 {
     [TestFixture(Category = "Proto-buf tests,serialization")]
-    public class ProtoBufSerializationProviderTests
-    {
-        [Test]
-        public void Serialize_RedisCacheItem_ReturnsString()
+    public class ProtoBufSerializationProviderTests : SerializationProviderTestsBase
+    { 
+        protected override ISerializationProvider GetSerializer()
         {
-            var value = new RedisCacheItem<string>
-            {
-                Expires = new DateTime(2014, 01, 02),
-                Key = "JsonSerializationProviderTests.Key",
-                Value = "Test",
-                Tags = new List<string> { "tag1", "tag2", "tag3" }
-            };
-
-            var serializer = new ProtoBufSerializationProvider();
-
-            var result = serializer.Serialize(value);
-
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void Deserialize_SerializedString_ReturnsRedisCacheItem()
-        {
-            var value = new RedisCacheItem<string>
-            {
-                Expires = new DateTime(2014, 01, 02),
-                Key = "JsonSerializationProviderTests.Key",
-                Value = "Test",
-                Tags = new List<string> { "tag1", "tag2", "tag3" }
-            };
-
-            var serializer = new ProtoBufSerializationProvider();
-
-            var serialized = serializer.Serialize(value);
-
-            var result = serializer.Deserialize<RedisCacheItem<string>>(serialized);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(value.Expires, result.Expires);
-            Assert.AreEqual(value.Key, result.Key);
-            Assert.AreEqual(value.Value, result.Value);
-            Assert.IsTrue((value.Tags.Count() == result.Tags.Count()) && !value.Tags.Except(result.Tags).Any());
+            return new ProtoBufSerializationProvider();
         }
     }
 }
