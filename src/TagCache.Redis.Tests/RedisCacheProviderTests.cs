@@ -174,8 +174,8 @@ namespace TagCache.Redis.Tests
             var result1 = cache.Get(key1);
             var result2 = cache.Get(key2);
 
-            Assert.AreEqual(value1, result1);
-            Assert.AreEqual(value2, result2);
+            Assert.AreEqual(value1, (string)result1);
+            Assert.AreEqual(value2, (string)result2);
 
             cache.Remove(new string[] { key1, key2 });
 

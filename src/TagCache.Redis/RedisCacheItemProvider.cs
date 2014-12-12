@@ -19,7 +19,7 @@ namespace TagCache.Redis
             var cacheString = client.Get(key);
             if (!string.IsNullOrEmpty(cacheString))
             {
-                return _serializer.Deserialize<RedisCacheItem>(cacheString);
+                return _serializer.Deserialize<RedisCacheItem>(cacheString.Value);
             }
             return null;
         }

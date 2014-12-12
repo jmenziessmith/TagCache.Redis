@@ -13,7 +13,7 @@ namespace TagCache.Redis.Tests.Serialization
         [Test]
         public void Serialize_RedisCacheItem_ReturnsString()
         {
-            var value = new RedisCacheItem()
+            var value = new RedisCacheItem
             {
                 Expires = new DateTime(2014, 01, 02),
                 Key = "JsonSerializationProviderTests.Key",
@@ -31,9 +31,9 @@ namespace TagCache.Redis.Tests.Serialization
         [Test]
         public void Deserialize_SerializedString_ReturnsRedisCacheItem()
         {
-            var value = new RedisCacheItem()
+            var value = new RedisCacheItem
             {
-                Expires = new DateTime(2014, 01, 02),
+                Expires = new DateTime(2015, 01, 02),
                 Key = "JsonSerializationProviderTests.Key",
                 Value = "Test",
                 Tags = new List<string> { "tag1", "tag2", "tag3" }

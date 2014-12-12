@@ -30,7 +30,7 @@ namespace TagCache.Redis
         }
 
 
-        public void Set(string key, string value, int expirySeconds)
+        public void Set(string key, RedisValue value, int expirySeconds)
         {
             var addTask = SetAsync(key, value, expirySeconds);
             addTask.Wait(_timeout);
@@ -44,7 +44,7 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> SetAsync(string key, string value, int expirySeconds)
+        private async Task<bool> SetAsync(string key, RedisValue value, int expirySeconds)
         {
             var conn = _connectionManager.GetConnection();
             await conn.GetDatabase(_db).StringSetAsync(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace TagCache.Redis
 
         }
 
-        public string Get(string key)
+        public RedisValue? Get(string key)
         {
             var resultTask = GetAsync(key);
             resultTask.Wait(_timeout);
@@ -64,13 +64,12 @@ namespace TagCache.Redis
             return resultTask.Result;
         }
 
-        private async Task<string> GetAsync(string key)
+        private async Task<RedisValue?> GetAsync(string key)
         {
             var conn = _connectionManager.GetConnection();
             var value = await conn.GetDatabase(_db).StringGetAsync(key).ConfigureAwait(false);
-            return value;
+            return value.HasValue ? (RedisValue?)value : null;
         }
-
 
         public bool Remove(string key)
         {

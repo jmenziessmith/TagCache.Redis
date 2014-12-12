@@ -1,28 +1,29 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using System;
-using System.IO;
+﻿using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using StackExchange.Redis;
 using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis.Serialization
 {
     public class BinarySerializationProvider : ISerializationProvider
     {
-        BinaryFormatter formatter = new BinaryFormatter();
+        readonly BinaryFormatter formatter = new BinaryFormatter();
 
-        public T Deserialize<T>(string value) where T : class
+        public T Deserialize<T>(RedisValue value) where T : class
         {
-            var bytes = Convert.FromBase64String(value);
-            MemoryStream memoryStream = new MemoryStream(bytes);
-            return (T)formatter.Deserialize(memoryStream);
+            using (var memoryStream = new MemoryStream(value))
+            {
+                return (T) formatter.Deserialize(memoryStream);
+            }
         }
 
-        public string Serialize<T>(T value) where T : class
+        public RedisValue Serialize<T>(T value) where T : class
         {
-            using (MemoryStream mStream = new MemoryStream())
+            using (var mStream = new MemoryStream())
             {
                 formatter.Serialize(mStream, value);
                 var bytes = mStream.ToArray();
-                return Convert.ToBase64String(bytes);
+                return bytes;
             }
         }
     }
