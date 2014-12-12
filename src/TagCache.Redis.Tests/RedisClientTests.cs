@@ -10,7 +10,7 @@ namespace TagCache.Redis.Tests
 
         private RedisClient newRedisClient()
         {
-            return new RedisClient(_redisHost, _redisDB, 5000);
+            return new RedisClient(new RedisConnectionManager("localhost"), _redisDB, 5000);
         }
          
 
@@ -22,7 +22,7 @@ namespace TagCache.Redis.Tests
             string value = "Hello World!";
             
             client.Set(key, value,5);
-
+            
             // no exception
         }
 
@@ -48,7 +48,7 @@ namespace TagCache.Redis.Tests
             var result = client.Get(key);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(value, result);
+            Assert.AreEqual(value, (string)result);
         }
 
 
@@ -64,7 +64,7 @@ namespace TagCache.Redis.Tests
 
             var result = client.Get(key); 
 
-            Assert.AreEqual(value, result); 
+            Assert.AreEqual(value, (string)result); 
 
             client.Remove(key);
             result = client.Get(key);
@@ -89,8 +89,8 @@ namespace TagCache.Redis.Tests
             var result1 = client.Get(key1);
             var result2 = client.Get(key2);
 
-            Assert.AreEqual(value1, result1);
-            Assert.AreEqual(value2, result2);
+            Assert.AreEqual(value1, (string)result1);
+            Assert.AreEqual(value2, (string)result2);
 
             client.Remove(new string[] { key1, key2 });
 

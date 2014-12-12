@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace TagCache.Redis
 {
@@ -11,7 +10,6 @@ namespace TagCache.Redis
         {
             _setKey = string.Format("{0}:_cacheExpireyKeys", configuration.RootNameSpace);
         }
-
 
         public void SetKeyExpiry(RedisClient client, string key, DateTime expiryDate)
         {
@@ -25,9 +23,7 @@ namespace TagCache.Redis
 
         public string[] GetExpiredKeys(RedisClient client, DateTime maxDate)
         {
-            var result = client.GetFromTimeSet(_setKey, maxDate);
-            return result.Select(x=>x.Key).ToArray();
-        } 
-
+            return client.GetFromTimeSet(_setKey, maxDate);
+        }
     }
 }

@@ -1,33 +1,58 @@
-﻿using System; 
-using BookSleeve;
+﻿using System;
+using StackExchange.Redis;
 
 namespace TagCache.Redis
 {
     public class RedisConnectionManager : IDisposable
     {
-        private volatile RedisConnection _connection;
         private readonly object _connectionLock = new object();
+        private static ConnectionMultiplexer _connection;
 
         public string Host { get; set; }
         public int Port { get; set; }
-        public int IOTimeout { get; set; }
+        public int? ConnectTimeout { get; set; }
         public string Password { get; set; }
         public int MaxUnsent { get; set; }
         public bool AllowAdmin { get; set; }
-        public int SyncTimeout { get; set; }
+        public int? SyncTimeout { get; set; }
 
-        public RedisConnectionManager(string host, int port = 6379, int ioTimeout = -1, string password = null, int maxUnsent = 2147483647, bool allowAdmin = false, int syncTimeout = 10000)
+        public RedisConnectionManager(string host = "127.0.0.1", int port = 6379, int? connectTimeout = null, string password = null, int maxUnsent = 2147483647, bool allowAdmin = false, int? syncTimeout = null)
         {
             Host = host;
             Port = port;
-            IOTimeout = ioTimeout;
+            ConnectTimeout = connectTimeout;
             Password = password;
             MaxUnsent = maxUnsent;
             AllowAdmin = allowAdmin;
             SyncTimeout = syncTimeout;
         }
 
-        public RedisConnection GetConnection(bool waitOnOpen = false)
+        private string BuildConnectionString()
+        {
+            return string.Format("{0}:{1}", Host, Port);
+        }
+
+        private ConfigurationOptions BuildConfigurationOptions()
+        {
+            var configString = BuildConnectionString();
+
+            var result = ConfigurationOptions.Parse(configString);
+
+            if (SyncTimeout != null)
+            {
+                result.SyncTimeout = SyncTimeout.Value;
+            }
+            if (ConnectTimeout != null)
+            {
+                result.ConnectTimeout = ConnectTimeout.Value;
+            }
+            result.AllowAdmin = AllowAdmin;
+            result.Password = Password;
+
+            return result;
+        }
+
+        public ConnectionMultiplexer GetConnection()
         {
             var connection = _connection;
 
@@ -37,30 +62,16 @@ namespace TagCache.Redis
                 {
                     if (_connection == null)
                     {
-                        _connection = new RedisConnection(Host, Port, IOTimeout, Password, MaxUnsent, AllowAdmin, SyncTimeout); 
-
-                        _connection.Shutdown += ConnectionOnShutdown;
-                        var openTask = _connection.Open();
-
-                        if (waitOnOpen) { _connection.Wait(openTask); }
+                        var options = BuildConfigurationOptions();
+                        _connection = ConnectionMultiplexer.Connect(options);
                     }
-
                     connection = _connection;
                 }
             }
 
-            return connection;
+            return connection;  
         }
-
-        private void ConnectionOnShutdown(object sender, ErrorEventArgs errorEventArgs)
-        {
-            lock (_connectionLock)
-            {
-                _connection.Shutdown -= ConnectionOnShutdown;
-                _connection = null;
-            }
-        }
-
+        
         public void Reset(bool abort = false)
         {
             lock (_connectionLock)

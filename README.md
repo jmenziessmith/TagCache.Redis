@@ -16,10 +16,7 @@ TagCache.Redis
  * Remove all items by tag
  * Multiple Serialization options 
  * Basic logging interface
- 
-### Roadmap
-* Multiplexed caching (sync with in memory cache)
-* Upgrade from booksleeve to StackExchange.Redis 
+
 
 ## Usage
 
