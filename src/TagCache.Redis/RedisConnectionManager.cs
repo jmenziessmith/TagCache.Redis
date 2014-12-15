@@ -8,18 +8,16 @@ namespace TagCache.Redis
         private readonly object _connectionLock = new object();
         private static ConnectionMultiplexer _connection;
 
-        public string Host { get; set; }
-        public int Port { get; set; }
+        public string ConnectionString { get; set; }
         public int? ConnectTimeout { get; set; }
         public string Password { get; set; }
         public int MaxUnsent { get; set; }
         public bool AllowAdmin { get; set; }
         public int? SyncTimeout { get; set; }
 
-        public RedisConnectionManager(string host = "127.0.0.1", int port = 6379, int? connectTimeout = null, string password = null, int maxUnsent = 2147483647, bool allowAdmin = false, int? syncTimeout = null)
+        public RedisConnectionManager(string connectionString = "127.0.0.1", int? connectTimeout = null, string password = null, int maxUnsent = 2147483647, bool allowAdmin = false, int? syncTimeout = null)
         {
-            Host = host;
-            Port = port;
+            ConnectionString = connectionString;
             ConnectTimeout = connectTimeout;
             Password = password;
             MaxUnsent = maxUnsent;
@@ -27,17 +25,10 @@ namespace TagCache.Redis
             SyncTimeout = syncTimeout;
         }
 
-        private string BuildConnectionString()
-        {
-            return string.Format("{0}:{1}", Host, Port);
-        }
-
         private ConfigurationOptions BuildConfigurationOptions()
         {
-            var configString = BuildConnectionString();
-
-            var result = ConfigurationOptions.Parse(configString);
-
+            var result = ConfigurationOptions.Parse(ConnectionString);
+            
             if (SyncTimeout != null)
             {
                 result.SyncTimeout = SyncTimeout.Value;
