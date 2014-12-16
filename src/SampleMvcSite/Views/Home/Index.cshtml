@@ -12,13 +12,14 @@
     </head>
     <body>
         <div><a href="/home/viewlog" target="_blank">View Log</a></div>
-        <br /><br />
-
-        <div>
-            @Model.SetupTimeMs
-            <br/>
-            @Model.LoadTimeMs
-        </div>
+        <br /><br /> 
+        
+        <h2>Timing</h2>
+        Setup Time : @Model.SetupTimeMs
+        <br/>
+        Load Time : @Model.LoadTimeMs
+        
+        <h2>Result</h2>
         @Model.Data.DateOfBirth <br/>
         @Model.Data.Name @Model.Data.Surname<br/>
         @foreach (var o in Model.Data.Other)
