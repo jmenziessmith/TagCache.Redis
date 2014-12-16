@@ -1,23 +1,14 @@
+﻿using NUnit.Framework; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using ProtoBuf;
-using ProtoBuf.Meta;
-using TagCache.Redis.ProtoBuf;
+using TagCache.Redis.FastJson;
 
 namespace TagCache.Redis.Tests.Serialization
 {
-    [TestFixture(Category = "Proto-buf tests,serialization")]
-    public class ProtoBufSerializationProviderTests
+    [TestFixture]
+    public class FastJsonSerializationProviderTests
     {
-        [TestFixtureSetUp]
-        public void ProtoBufSerializationProvider()
-        {
-            //Setup attributless serialization settings for RedisCacheItem.
-            var redisCacheItemType = RuntimeTypeModel.Default.Add(typeof(RedisCacheItem<string>), false);
-            redisCacheItemType.Add("Key", "Tags", "Expires", "Value");
-        }
 
         [Test]
         public void Serialize_RedisCacheItem_ReturnsString()
@@ -27,14 +18,14 @@ namespace TagCache.Redis.Tests.Serialization
                 Expires = new DateTime(2014, 01, 02),
                 Key = "JsonSerializationProviderTests.Key",
                 Value = "Test",
-                Tags = new List<string> { "tag1", "tag2", "tag3" }
+                Tags = new List<string>{ "tag1", "tag2", "tag3" }
             };
 
-            var serializer = new ProtoBufSerializationProvider();
+            var serializer = new FastJsonSerializationProvider();
 
             var result = serializer.Serialize(value);
 
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(result);            
         }
 
         [Test]
@@ -42,23 +33,24 @@ namespace TagCache.Redis.Tests.Serialization
         {
             var value = new RedisCacheItem<string>
             {
-                Expires = new DateTime(2014, 01, 02),
+                Expires = new DateTime(2015, 01, 02),
                 Key = "JsonSerializationProviderTests.Key",
                 Value = "Test",
                 Tags = new List<string> { "tag1", "tag2", "tag3" }
             };
 
-            var serializer = new ProtoBufSerializationProvider();
+            var serializer = new FastJsonSerializationProvider();
 
             var serialized = serializer.Serialize(value);
 
             var result = serializer.Deserialize<RedisCacheItem<string>>(serialized);
 
+
             Assert.IsNotNull(result);
             Assert.AreEqual(value.Expires, result.Expires);
             Assert.AreEqual(value.Key, result.Key);
             Assert.AreEqual(value.Value, result.Value);
-            Assert.IsTrue((value.Tags.Count() == result.Tags.Count()) && !value.Tags.Except(result.Tags).Any());
+            Assert.IsTrue((value.Tags.Count() == result.Tags.Count()) && !value.Tags.Except(result.Tags).Any()); 
         }
     }
 }
