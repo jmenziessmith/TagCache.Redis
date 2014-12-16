@@ -31,9 +31,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="fastjson">
-      <HintPath>..\packages\fastJSON.2.1.7.0\lib\net40\fastjson.dll</HintPath>
-    </Reference>
     <Reference Include="StackExchange.Redis.StrongName">
       <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.371\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
     </Reference>
@@ -49,6 +46,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Interfaces\IRedisCacheLogger.cs" />
     <Compile Include="Interfaces\IRedisCacheProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.Shared.cs" />
     <Compile Include="RedisExpiryManager.cs" />
     <Compile Include="RedisSubscriberConnectionManager.cs" />
     <Compile Include="RedisConnectionManager.cs" />
