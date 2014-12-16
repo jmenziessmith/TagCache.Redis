@@ -76,6 +76,7 @@
     <Compile Include="Serialization\FastJsonSerializationProviderTests.cs" />
     <Compile Include="Serialization\JsonSerializationProviderTests.cs" />
     <Compile Include="Serialization\ProtoBufSerializationProviderTests.cs" />
+    <Compile Include="Serialization\SerializationProviderTestsBase.cs" />
     <Compile Include="Serialization\XmlSerializationProviderTests.cs" />
     <Compile Include="TestObject.cs" />
   </ItemGroup>
