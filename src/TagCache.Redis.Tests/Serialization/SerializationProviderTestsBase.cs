@@ -3,13 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
+using ProtoBuf.Meta;
 using TagCache.Redis.Interfaces;
-using TagCache.Redis.Serialization;
+using TagCache.Redis.ProtoBuf;
 
 namespace TagCache.Redis.Tests.Serialization
 {
     public abstract class SerializationProviderTestsBase
     {
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            if (GetSerializer() is ProtoBufSerializationProvider)
+            {
+                //Setup attributeless serialization settings for RedisCacheItem.
+                var redisCacheItemType = RuntimeTypeModel.Default.Add(typeof(RedisCacheItem<TestObject>), false);
+                redisCacheItemType.Add("Key", "Tags", "Expires", "Value");
+            }
+        }
+
         protected static RedisCacheItem<TestObject> CreateTestObject()
         {
             var value = new RedisCacheItem<TestObject>
@@ -29,11 +41,11 @@ namespace TagCache.Redis.Tests.Serialization
             for (int i = 0; i < 20; i++)
             {
                 value.Value.SomeList.Add(Guid.NewGuid().ToString());
-            } 
+            }
 
             return value;
         }
-         
+
         protected abstract ISerializationProvider GetSerializer();
 
 
@@ -90,7 +102,7 @@ namespace TagCache.Redis.Tests.Serialization
             }
             stopwatch.Stop();
 
-            Console.Write("{0} items serialised in {1}ms = {2}ms/item", count, stopwatch.ElapsedMilliseconds, (double)stopwatch.ElapsedMilliseconds / count);
+            Console.Write("{0} items serialised in {1}ms = {2}ms/item using {3}", count, stopwatch.ElapsedMilliseconds, (double)stopwatch.ElapsedMilliseconds / count, serializer.GetType().Name);
         }
 
 

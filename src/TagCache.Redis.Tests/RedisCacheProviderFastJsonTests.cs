@@ -1,17 +1,16 @@
 using NUnit.Framework;
-using TagCache.Redis.Json.Net;
-using TagCache.Redis.Serialization;
+using TagCache.Redis.FastJson;
 
 namespace TagCache.Redis.Tests
 {
-    [TestFixture(Category = "JSON tests")]
-    public class RedisCacheProviderJsonTests : RedisCacheProviderTests
+    [TestFixture(Category = "Fast JSON tests")]
+    public class RedisCacheProviderFastJsonTests : RedisCacheProviderTests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
         {
             return new CacheConfiguration(connection)
             {
-                Serializer = new JsonSerializationProvider()
+                Serializer = new FastJsonSerializationProvider()
             };
         }
     }

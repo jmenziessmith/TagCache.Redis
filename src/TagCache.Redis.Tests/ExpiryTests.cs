@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq; 
-using System.Threading; 
+using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using TagCache.Redis.Tests.Helpers;
 

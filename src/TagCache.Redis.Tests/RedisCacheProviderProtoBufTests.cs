@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using TagCache.Redis.Serialization;
+using TagCache.Redis.ProtoBuf;
 
 namespace TagCache.Redis.Tests
 {
