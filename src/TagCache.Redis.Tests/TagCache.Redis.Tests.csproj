@@ -67,6 +67,7 @@
     <Compile Include="RedisCacheProviderBinaryTests.cs" />
     <Compile Include="RedisCacheProviderFastJsonTests.cs" />
     <Compile Include="RedisCacheProviderJsonTests.cs" />
+    <Compile Include="RedisCacheProviderMigrantTests.cs" />
     <Compile Include="RedisCacheProviderProtoBufTests.cs" />
     <Compile Include="RedisCacheProviderTests.cs" />
     <Compile Include="RedisCacheProviderXmlTests.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Serialization\BinarySerializationProviderTests.cs" />
     <Compile Include="Serialization\FastJsonSerializationProviderTests.cs" />
     <Compile Include="Serialization\JsonSerializationProviderTests.cs" />
+    <Compile Include="Serialization\MigrantSerializationProviderTests.cs" />
     <Compile Include="Serialization\ProtoBufSerializationProviderTests.cs" />
     <Compile Include="Serialization\SerializationProviderTestsBase.cs" />
     <Compile Include="Serialization\XmlSerializationProviderTests.cs" />
@@ -92,6 +94,10 @@
       <Project>{35f435c4-0445-4240-a9d6-58275da96624}</Project>
       <Name>TagCache.Redis.Json.Net</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TagCache.Redis.Migrant\TagCache.Redis.Migrant.csproj">
+      <Project>{53054978-2e7b-46e9-a2b2-a32d88a63340}</Project>
+      <Name>TagCache.Redis.Migrant</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TagCache.Redis.ProtoBuf\TagCache.Redis.ProtoBuf.csproj">
       <Project>{6ac97c84-c2d6-4479-890a-7c5d2a7aa6cf}</Project>
       <Name>TagCache.Redis.ProtoBuf</Name>
@@ -103,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TagCache.Redis.nuspec" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
