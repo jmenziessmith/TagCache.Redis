@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.FastJson", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.Migrant", "TagCache.Redis.Migrant\TagCache.Redis.Migrant.csproj", "{53054978-2E7B-46E9-A2B2-A32D88A63340}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.MessagePack", "TagCache.Redis.MessagePack\TagCache.Redis.MessagePack.csproj", "{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{53054978-2E7B-46E9-A2B2-A32D88A63340}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53054978-2E7B-46E9-A2B2-A32D88A63340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53054978-2E7B-46E9-A2B2-A32D88A63340}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
