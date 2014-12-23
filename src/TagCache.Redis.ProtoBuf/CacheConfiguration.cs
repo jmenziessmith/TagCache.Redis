@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TagCache.Redis.ProtoBuf
+﻿namespace TagCache.Redis.ProtoBuf
 {
-    public class CacheConfiguration : TagCache.Redis.CacheConfiguration
+    public class CacheConfiguration : Redis.CacheConfiguration
     {
         public CacheConfiguration(RedisConnectionManager connectionManager) : base(connectionManager)
         {
-            this.Serializer = new ProtoBufSerializationProvider();
+            Serializer = new ProtoBufSerializationProvider();
         } 
     }
 }

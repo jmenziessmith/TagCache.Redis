@@ -4,7 +4,7 @@ using TagCache.Redis.Interfaces;
 using TagCache.Redis.Serialization; 
 using System;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
 
 namespace TagCache.Redis.Tests.Serialization
 {
