@@ -1,11 +1,10 @@
-﻿namespace TagCache.Redis.ProtoBuf
+﻿namespace TagCache.Redis.MessagePack
 {
     public class CacheConfiguration : Redis.CacheConfiguration
     {
         public CacheConfiguration(RedisConnectionManager connectionManager) : base(connectionManager)
         {
-            Serializer = new ProtoBufSerializationProvider();
-            CacheItemFactory = new ProtobufRedisCacheItemFactory();
+            Serializer = new MessagePackSerializationProvider(); 
         }
 
     }

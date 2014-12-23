@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis
 {
-    public interface IRedisCacheItem
-    {
-        string Key { get; set; }
-        List<string> Tags { get; set; }
-        DateTime Expires { get; set; }
-    }
-
     [Serializable]
     public class RedisCacheItem : IRedisCacheItem
     {
@@ -21,7 +15,7 @@ namespace TagCache.Redis
     }
 
     [Serializable]
-    public class RedisCacheItem<T> : RedisCacheItem
+    public class RedisCacheItem<T> : RedisCacheItem, IRedisCacheItem<T>
     {
         public override string Key { get; set; }
 

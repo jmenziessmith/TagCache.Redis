@@ -35,7 +35,24 @@ namespace TagCache.Redis
 
             }
             set { _serializer = value; }
-        } 
+        }
+
+
+        public IRedisCacheItemFactory _cacheItemFactory;
+
+        public IRedisCacheItemFactory CacheItemFactory 
+        {
+            get
+            {
+                if (_cacheItemFactory == null)
+                {
+                    _cacheItemFactory = new RedisCacheItemFactory();
+                }
+                return _cacheItemFactory;
+
+            }
+            set { _cacheItemFactory = value; }
+        }
 
         public RedisClientConfiguration RedisClientConfiguration { get; set; }
     }

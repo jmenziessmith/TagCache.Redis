@@ -228,6 +228,7 @@ namespace TagCache.Redis.Tests
         {
             var redis = new RedisConnectionManager();
             var cache = new RedisCacheProvider(redis);
+            var config = NewCacheConfiguration(redis);
             cache.Logger = new TestRedisLogger();
             string key = "TagCacheTests:Add";
             String value = "Hello World!";
@@ -237,7 +238,7 @@ namespace TagCache.Redis.Tests
             cache.Set(key, value, expires, tag);
             var test = cache.Get<String>(key);
 
-            var tagManager = new RedisTagManager();
+            var tagManager = new RedisTagManager(config.CacheItemFactory);
 
             var result = tagManager.GetKeysForTag(newRedisClient(), tag);
 

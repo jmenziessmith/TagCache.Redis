@@ -8,10 +8,7 @@ namespace TagCache.Redis.Tests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
         {
-            return new CacheConfiguration(connection)
-            {
-                Serializer = new ProtoBufSerializationProvider()
-            };
+            return new ProtoBuf.CacheConfiguration(connection);
         }
     }
 }

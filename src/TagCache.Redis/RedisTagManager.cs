@@ -1,10 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis
 {
     public class RedisTagManager
-    {
+    { 
+        private readonly IRedisCacheItemFactory _cacheItemFactory;
+
+        public RedisTagManager(IRedisCacheItemFactory cacheItemFactory)
+        {
+            _cacheItemFactory = cacheItemFactory;
+        }
 
         /// <summary>
         /// Retrieves all keys from the tag lists for the given tag 
@@ -44,11 +51,10 @@ namespace TagCache.Redis
 
         public void UpdateTags(RedisClient client, string key, IEnumerable<string> tags)
         {
-            var cacheItem = new RedisCacheItem
-            {
-                Key = key,
-                Tags = tags == null ? null :  tags.ToList()
-            };
+            var cacheItem = _cacheItemFactory.Create(
+                key : key,
+                tags : tags == null ? null :  tags.ToList()
+            );
             UpdateTags(client, cacheItem);
         }
 
@@ -114,11 +120,10 @@ namespace TagCache.Redis
             foreach (var key in keys)
             {
                 var tags = GetTagsForKey(client, key);
-                var cacheItem = new RedisCacheItem
-                {
-                    Key = key,
-                    Tags = tags.ToList()
-                };
+                var cacheItem = _cacheItemFactory.Create(
+                    key: key,
+                    tags: tags.ToList()
+                    );
                 RemoveKeyFromTags(client, cacheItem);
                 RemoveTagsForKey(client, cacheItem);
             }
