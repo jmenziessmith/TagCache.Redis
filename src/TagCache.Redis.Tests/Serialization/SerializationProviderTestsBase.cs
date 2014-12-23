@@ -127,7 +127,7 @@ namespace TagCache.Redis.Tests.Serialization
             }
             stopwatch.Stop();
 
-            Console.Write("{0} items deserialised in {1}ms = {2}ms/item", count, stopwatch.ElapsedMilliseconds, (double)stopwatch.ElapsedMilliseconds / count);
+            Console.Write("{0} items deserialised in {1}ms = {2}ms/item using {3}", count, stopwatch.ElapsedMilliseconds, (double)stopwatch.ElapsedMilliseconds / count, serializer.GetType().Name);
         }
 
     }
