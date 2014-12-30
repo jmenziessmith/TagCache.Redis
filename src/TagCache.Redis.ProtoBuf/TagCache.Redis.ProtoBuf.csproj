@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="TagCache.Redis.nuspec" />
+    <None Include="TagCache.Redis.ProtoBuf.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagCache.Redis\TagCache.Redis.csproj">
