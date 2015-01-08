@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheConfiguration.cs" />
     <Compile Include="MessagePackSerializationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,7 +54,13 @@
       <Link>Properties\AssemblyInfo.Shared.cs</Link>
     </Compile>
     <None Include="packages.config" />
-    <None Include="TagCache.Redis.nuspec" />
+    <None Include="TagCache.Redis.MessagePack.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagCache.Redis\TagCache.Redis.csproj">
+      <Project>{280f50ba-1633-4de0-8c6f-77f82290d214}</Project>
+      <Name>TagCache.Redis</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

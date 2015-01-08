@@ -1,5 +1,4 @@
-using NUnit.Framework;
-using TagCache.Redis.Migrant;
+using NUnit.Framework; 
 
 namespace TagCache.Redis.Tests
 {
@@ -8,10 +7,7 @@ namespace TagCache.Redis.Tests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
         {
-            return new CacheConfiguration(connection)
-            {
-                Serializer = new MigrantSerializationProvider()
-            };
+            return new Migrant.CacheConfiguration(connection);
         }
     }
 }

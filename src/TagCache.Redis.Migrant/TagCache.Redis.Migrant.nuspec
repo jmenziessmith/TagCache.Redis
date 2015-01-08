@@ -12,6 +12,9 @@
     <description>$description$</description>
     <releaseNotes>Alpha release</releaseNotes>
     <copyright>Copyright 2014</copyright>
-    <tags>Redis Distributed Cache Caching Tag Tags Tagging Tagged Protobuf</tags>
+    <tags>Redis Distributed Cache Caching Tag Tags Tagging Tagged Migrant</tags>
+    <dependencies>
+      <dependency id="TagCache.Redis" version="$version$" />
+    </dependencies>
   </metadata>
 </package>

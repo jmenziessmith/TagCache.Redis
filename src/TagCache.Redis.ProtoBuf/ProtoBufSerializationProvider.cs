@@ -1,4 +1,3 @@
-﻿using System.Data;
 using System.IO;
 using System.Linq;
 using AutoProtobuf;
@@ -6,6 +5,7 @@ using ProtoBuf;
 using ProtoBuf.Data;
 using StackExchange.Redis;
 using TagCache.Redis.Interfaces;
+using System.Data;
 
 namespace TagCache.Redis.ProtoBuf
 {

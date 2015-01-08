@@ -8,10 +8,12 @@ namespace TagCache.Redis
     public class RedisCacheItemProvider
     {
         private ISerializationProvider _serializer;
+        private IRedisCacheItemFactory _cacheItemFactory;
 
-        public RedisCacheItemProvider(ISerializationProvider serializer)
+        public RedisCacheItemProvider(ISerializationProvider serializer, IRedisCacheItemFactory cacheItemFactory)
         {
             _serializer = serializer;
+            _cacheItemFactory = cacheItemFactory;
         }
 
         public RedisCacheItem<T> Get<T>(RedisClient client, string key)
@@ -55,15 +57,18 @@ namespace TagCache.Redis
         }
 
 
-        private RedisCacheItem<T> Create<T>(T value, string key, DateTime expires, IEnumerable<string> tags)
+        private IRedisCacheItem<T> Create<T>(T value, string key, DateTime expires, IEnumerable<string> tags)
         {
-            return new RedisCacheItem<T>
-            {
-                Value = value,
-                Key = key,
-                Expires = expires,
-                Tags = tags == null ? null : tags.ToList(), 
-            };
+            var tagsList = tags == null ? null : tags.ToList();
+
+            var item = _cacheItemFactory.Create(
+                key : key,
+                tags : tagsList,
+                expires : expires,
+                value : value
+                );
+
+            return item;
         }
 
         /// <summary>

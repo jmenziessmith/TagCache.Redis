@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis", "TagCache.Redis\TagCache.Redis.csproj", "{280F50BA-1633-4DE0-8C6F-77F82290D214}"
 EndProject
@@ -14,14 +14,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E8EEF7
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{531AD288-478D-4CD8-9ED9-9DCC4F09A278}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{531AD288-478D-4CD8-9ED9-9DCC4F09A278}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisCacheLogMonitor.ConsoleApp", "RedisCacheLogMonitor.ConsoleApp\RedisCacheLogMonitor.ConsoleApp.csproj", "{228B7621-5841-49C3-8E23-9F8119D49352}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5ED726C7-93D3-46B0-817B-F65D76E8D353}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Tools", "_Tools", "{5ED726C7-93D3-46B0-817B-F65D76E8D353}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMvcSite", "SampleMvcSite\SampleMvcSite.csproj", "{E519DDBF-F7EC-4B4E-B177-ED410F7DAF54}"
 EndProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.Migrant", "TagCache.Redis.Migrant\TagCache.Redis.Migrant.csproj", "{53054978-2E7B-46E9-A2B2-A32D88A63340}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCache.Redis.MessagePack", "TagCache.Redis.MessagePack\TagCache.Redis.MessagePack.csproj", "{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TagCache.Redis.Serializers", "TagCache.Redis.Serializers", "{20868641-262C-469B-B19A-D6B10AA173B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,8 +88,13 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6} = {5ED726C7-93D3-46B0-817B-F65D76E8D353}
 		{228B7621-5841-49C3-8E23-9F8119D49352} = {5ED726C7-93D3-46B0-817B-F65D76E8D353}
+		{A0BB8EA6-E8C1-4853-A966-18E024CFBFF6} = {5ED726C7-93D3-46B0-817B-F65D76E8D353}
 		{E519DDBF-F7EC-4B4E-B177-ED410F7DAF54} = {5ED726C7-93D3-46B0-817B-F65D76E8D353}
+		{0089EEE8-9DFD-41C0-9128-70BEE1C253D8} = {20868641-262C-469B-B19A-D6B10AA173B6}
+		{35F435C4-0445-4240-A9D6-58275DA96624} = {20868641-262C-469B-B19A-D6B10AA173B6}
+		{02FF6CC4-69E3-40F5-9ED5-2B3830A13E7D} = {20868641-262C-469B-B19A-D6B10AA173B6}
+		{53054978-2E7B-46E9-A2B2-A32D88A63340} = {20868641-262C-469B-B19A-D6B10AA173B6}
+		{6AC97C84-C2D6-4479-890A-7C5D2A7AA6CF} = {20868641-262C-469B-B19A-D6B10AA173B6}
 	EndGlobalSection
 EndGlobal

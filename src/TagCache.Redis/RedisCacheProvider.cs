@@ -31,9 +31,9 @@ namespace TagCache.Redis
         {
             _client = new RedisClient(configuration.RedisClientConfiguration.RedisConnectionManagerConnectionManager, configuration.RedisClientConfiguration.DbNo, configuration.RedisClientConfiguration.TimeoutMilliseconds);
             _serializer = configuration.Serializer;
-            _tagManager = new RedisTagManager();
+            _tagManager = new RedisTagManager(configuration.CacheItemFactory);
             _expiryManager = new RedisExpiryManager(configuration);
-            _cacheItemProvider = new RedisCacheItemProvider(_serializer);
+            _cacheItemProvider = new RedisCacheItemProvider(_serializer, configuration.CacheItemFactory);
 
             SetupExpireHandler(configuration, this);
         }
@@ -113,7 +113,7 @@ namespace TagCache.Redis
             return null;
         }
 
-        private bool CacheItemIsValid(RedisCacheItem item)
+        private bool CacheItemIsValid(IRedisCacheItem item)
         {
             if (item.Expires < DateTime.Now)
             {

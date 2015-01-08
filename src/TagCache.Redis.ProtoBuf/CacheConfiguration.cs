@@ -5,6 +5,8 @@
         public CacheConfiguration(RedisConnectionManager connectionManager) : base(connectionManager)
         {
             Serializer = new ProtoBufSerializationProvider(new ProtobufSerializationConfiguration());
-        } 
+            CacheItemFactory = new ProtobufRedisCacheItemFactory();
+        }
+
     }
 }

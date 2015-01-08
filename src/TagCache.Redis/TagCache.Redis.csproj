@@ -44,9 +44,12 @@
   <ItemGroup>
     <Compile Include="CacheConfiguration.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Interfaces\IRedisCacheItem.cs" />
+    <Compile Include="Interfaces\IRedisCacheItemFactory.cs" />
     <Compile Include="Interfaces\IRedisCacheLogger.cs" />
     <Compile Include="Interfaces\IRedisCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.Shared.cs" />
+    <Compile Include="RedisCacheItemFactory.cs" />
     <Compile Include="RedisExpiryManager.cs" />
     <Compile Include="RedisSubscriberConnectionManager.cs" />
     <Compile Include="RedisConnectionManager.cs" />
