@@ -73,7 +73,6 @@ namespace TagCache.Redis
         /// <returns></returns>
         private int GetExpirySeconds(DateTime expires)
         {
-            const int additionalSeconds = 86400; // 1 day
             var seconds = expires.Subtract(DateTime.Now).TotalSeconds; 
             var result = (int)seconds;
             return Math.Max(1,result);

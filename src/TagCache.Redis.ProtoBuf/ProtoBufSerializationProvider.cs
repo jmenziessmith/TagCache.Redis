@@ -1,6 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using System.Data;
+﻿using System.Data;
 using System.IO;
 using System.Linq;
 using AutoProtobuf;
@@ -13,13 +11,25 @@ namespace TagCache.Redis.ProtoBuf
 {
     public class ProtoBufSerializationProvider : ISerializationProvider
     {
+        private readonly ProtobufSerializationConfiguration configuration;
+
+        public ProtoBufSerializationProvider(ProtobufSerializationConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
+        public ProtoBufSerializationProvider()
+        {
+            configuration = new ProtobufSerializationConfiguration { BuildSerializers = false };
+        }
+
         public T Deserialize<T>(RedisValue value) where T : class
         {
             using (var memoryStream = new MemoryStream(value))
             {
                 var type = typeof(T);
                 var valueType = type.BaseType != null && type.IsAssignableFrom(typeof(RedisCacheItem<>)) ? type.GetGenericArguments().FirstOrDefault() : null;
-                
+
                 var dataTableType = typeof(DataTable);
 
                 if (valueType != null && (valueType == dataTableType || valueType.IsSubclassOf(dataTableType)))
@@ -50,7 +60,10 @@ namespace TagCache.Redis.ProtoBuf
                     } as T;
                 }
 
-                SerializerBuilder.Build<T>();
+                if (configuration.BuildSerializers)
+                {
+                    SerializerBuilder.Build<T>();
+                }
 
                 return Serializer.Deserialize<T>(memoryStream);
             }
@@ -87,10 +100,13 @@ namespace TagCache.Redis.ProtoBuf
 
                 if (useStandardSerializer)
                 {
-                    SerializerBuilder.Build(value);
+                    if (configuration.BuildSerializers || type.BaseType.IsAssignableFrom(typeof(RedisCacheItem<>)))
+                    {
+                        SerializerBuilder.Build(value);
+                    }
                     Serializer.Serialize(memoryStream, value);
                 }
-                
+
                 var bytes = memoryStream.ToArray();
                 return bytes;
             }

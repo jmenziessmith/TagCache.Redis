@@ -31,7 +31,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
-      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\Symbiotics\Mercurial\symbiotics\src\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="protobuf-net-data">
       <HintPath>..\..\..\..\Symbiotics\Mercurial\symbiotics\src\packages\protobuf-net-data.2.0.7.668\lib\net45\protobuf-net-data.dll</HintPath>
@@ -53,6 +54,7 @@
     </Compile>
     <Compile Include="CacheConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtobufSerializationConfiguration.cs" />
     <Compile Include="ProtoBufSerializationProvider.cs" />
   </ItemGroup>
   <ItemGroup>

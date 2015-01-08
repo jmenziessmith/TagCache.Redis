@@ -4,7 +4,7 @@
     {
         public CacheConfiguration(RedisConnectionManager connectionManager) : base(connectionManager)
         {
-            Serializer = new ProtoBufSerializationProvider();
+            Serializer = new ProtoBufSerializationProvider(new ProtobufSerializationConfiguration());
         } 
     }
 }
