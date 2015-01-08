@@ -7,7 +7,7 @@ namespace TagCache.Redis.Tests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
         {
-            return new Migrant.CacheConfiguration(connection);
+            return new CacheConfiguration(connection);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace TagCache.Redis.ProtoBuf
 
         public ProtoBufSerializationProvider()
         {
-            configuration = new ProtobufSerializationConfiguration { BuildSerializers = false };
+            configuration = new ProtobufSerializationConfiguration { BuildSerializers = false };            
         }
 
         public T Deserialize<T>(RedisValue value) where T : class
@@ -28,13 +28,13 @@ namespace TagCache.Redis.ProtoBuf
             using (var memoryStream = new MemoryStream(value))
             {
                 var type = typeof(T);
-                var valueType = type.BaseType != null && type.IsAssignableFrom(typeof(RedisCacheItem<>)) ? type.GetGenericArguments().FirstOrDefault() : null;
+                var valueType = type.BaseType != null && type.IsAssignableFrom(typeof(ProtobufRedisCacheItem<>)) ? type.GetGenericArguments().FirstOrDefault() : null;
 
                 var dataTableType = typeof(DataTable);
 
                 if (valueType != null && (valueType == dataTableType || valueType.IsSubclassOf(dataTableType)))
                 {
-                    return new RedisCacheItem<DataTable>
+                    return new ProtobufRedisCacheItem<DataTable>
                     {
                         Value = DataSerializer.DeserializeDataTable(memoryStream)
                     } as T;
@@ -44,7 +44,7 @@ namespace TagCache.Redis.ProtoBuf
 
                 if (valueType != null && (valueType == dataSetType || valueType.IsSubclassOf(dataSetType)))
                 {
-                    return new RedisCacheItem<DataSet>
+                    return new ProtobufRedisCacheItem<DataSet>
                     {
                         Value = DataSerializer.DeserializeDataSet(memoryStream)
                     } as T;
@@ -54,7 +54,7 @@ namespace TagCache.Redis.ProtoBuf
 
                 if (valueType != null && (valueType == dataReaderType || valueType.IsSubclassOf(dataReaderType)))
                 {
-                    return new RedisCacheItem<IDataReader>
+                    return new ProtobufRedisCacheItem<IDataReader>
                     {
                         Value = DataSerializer.Deserialize(memoryStream)
                     } as T;
@@ -65,15 +65,22 @@ namespace TagCache.Redis.ProtoBuf
                     SerializerBuilder.Build<T>();
                 }
 
-                return Serializer.Deserialize<T>(memoryStream);
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IRedisCacheItem<>))
+                {
+                    var originalType = type;
+                    type = typeof(ProtobufRedisCacheItem<>);
+                    type = type.MakeGenericType(originalType.GetGenericArguments());
+                }
+
+                return Serializer.NonGeneric.Deserialize(type, memoryStream) as T;
             }
         }
 
         public RedisValue Serialize<T>(T value) where T : class
         {
             bool useStandardSerializer = true;
-            var type = typeof(T);
-            var valueType = type.BaseType != null && type.BaseType.IsAssignableFrom(typeof(RedisCacheItem<>)) ? type.GetGenericArguments().FirstOrDefault() : null;
+            var type = value.GetType();
+            var valueType = type.BaseType != null && type.BaseType.IsAssignableFrom(typeof(ProtobufRedisCacheItem<>)) ? type.GetGenericArguments().FirstOrDefault() : null;
 
             using (var memoryStream = new MemoryStream())
             {
@@ -81,30 +88,30 @@ namespace TagCache.Redis.ProtoBuf
                 {
                     if (valueType == typeof(DataTable))
                     {
-                        DataSerializer.Serialize(memoryStream, (value as RedisCacheItem<DataTable>).Value);
+                        DataSerializer.Serialize(memoryStream, (value as ProtobufRedisCacheItem<DataTable>).Value);
                         useStandardSerializer = false;
                     }
 
                     if (valueType == typeof(DataSet))
                     {
-                        DataSerializer.Serialize(memoryStream, (value as RedisCacheItem<DataSet>).Value);
+                        DataSerializer.Serialize(memoryStream, (value as ProtobufRedisCacheItem<DataSet>).Value);
                         useStandardSerializer = false;
                     }
 
                     if (valueType == typeof(IDataReader))
                     {
-                        DataSerializer.Serialize(memoryStream, (value as RedisCacheItem<IDataReader>).Value);
+                        DataSerializer.Serialize(memoryStream, (value as ProtobufRedisCacheItem<IDataReader>).Value);
                         useStandardSerializer = false;
                     }
                 }
 
                 if (useStandardSerializer)
                 {
-                    if (configuration.BuildSerializers || type.BaseType.IsAssignableFrom(typeof(RedisCacheItem<>)))
+                    if (configuration.BuildSerializers || type.BaseType.IsAssignableFrom(typeof(ProtobufRedisCacheItem<>)))
                     {
-                        SerializerBuilder.Build(value);
+                        SerializerBuilder.Build(type);
                     }
-                    Serializer.Serialize(memoryStream, value);
+                    Serializer.NonGeneric.Serialize(memoryStream, value);
                 }
 
                 var bytes = memoryStream.ToArray();

@@ -6,7 +6,7 @@ using TagCache.Redis.ProtoBuf;
 namespace TagCache.Redis.Tests.Serialization
 {
     [TestFixture(Category = "Proto-buf tests,serialization")]
-    public class ProtoBufSerializationProviderTests : SerializationProviderTestsBase
+    public class ProtoBufSerializationProviderTests : SerializationProviderTestsBase<ProtobufRedisCacheItem<TestObject>>
     {
         protected override ISerializationProvider GetSerializer()
         {

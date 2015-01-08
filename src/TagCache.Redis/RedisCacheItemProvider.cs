@@ -16,20 +16,20 @@ namespace TagCache.Redis
             _cacheItemFactory = cacheItemFactory;
         }
 
-        public RedisCacheItem<T> Get<T>(RedisClient client, string key)
+        public IRedisCacheItem<T> Get<T>(RedisClient client, string key)
         {
             var cacheString = client.Get(key);
             if (!string.IsNullOrEmpty(cacheString))
             {
-                return _serializer.Deserialize<RedisCacheItem<T>>(cacheString.Value);
+                return _serializer.Deserialize<IRedisCacheItem<T>>(cacheString.Value);
             }
             return null;
         }
 
 
-        public List<RedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
+        public List<IRedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
         {
-            var result = new List<RedisCacheItem<T>>();
+            var result = new List<IRedisCacheItem<T>>();
 
             foreach (var key in keys)
             {
