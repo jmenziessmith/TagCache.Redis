@@ -7,8 +7,8 @@ namespace TagCache.Redis
 {
     public class RedisCacheItemProvider
     {
-        private ISerializationProvider _serializer;
-        private IRedisCacheItemFactory _cacheItemFactory;
+        private readonly ISerializationProvider _serializer;
+        private readonly IRedisCacheItemFactory _cacheItemFactory;
 
         public RedisCacheItemProvider(ISerializationProvider serializer, IRedisCacheItemFactory cacheItemFactory)
         {
@@ -25,7 +25,6 @@ namespace TagCache.Redis
             }
             return null;
         }
-
 
         public List<IRedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
         {
@@ -45,15 +44,16 @@ namespace TagCache.Redis
 
         public bool Set<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
         {
-            if (value != null)
+            if (value == null)
             {
-                var cacheItem = Create(value, key, expires, tags);
-                var serialized = _serializer.Serialize(cacheItem);
-                int expirySeconds = GetExpirySeconds(expires);
-                client.Set(key, serialized, expirySeconds);
-                return true;
+                return false;
             }
-            return false;
+
+            var cacheItem = Create(value, key, expires, tags);
+            var serialized = _serializer.Serialize(cacheItem);
+            int expirySeconds = GetExpirySeconds(expires);
+            client.Set(key, serialized, expirySeconds);
+            return true;
         }
 
 
@@ -62,11 +62,11 @@ namespace TagCache.Redis
             var tagsList = tags == null ? null : tags.ToList();
 
             var item = _cacheItemFactory.Create(
-                key : key,
-                tags : tagsList,
-                expires : expires,
-                value : value
-                );
+                key: key,
+                tags: tagsList,
+                expires: expires,
+                value: value
+            );
 
             return item;
         }
@@ -78,10 +78,9 @@ namespace TagCache.Redis
         /// <returns></returns>
         private int GetExpirySeconds(DateTime expires)
         {
-            var seconds = expires.Subtract(DateTime.Now).TotalSeconds; 
+            var seconds = expires.Subtract(DateTime.Now).TotalSeconds;
             var result = (int)seconds;
-            return Math.Max(1,result);
+            return Math.Max(1, result);
         }
-
     }
 }
