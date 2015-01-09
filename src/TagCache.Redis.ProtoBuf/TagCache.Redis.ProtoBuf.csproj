@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoProtobuf, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Symbiotics\Mercurial\symbiotics\src\packages\AutoProtobuf.0.1.1.0-alpha\lib\net45\AutoProtobuf.dll</HintPath>
-    </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Symbiotics\Mercurial\symbiotics\src\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
@@ -58,6 +54,7 @@
       <Link>Properties\AssemblyInfo.Shared.cs</Link>
     </Compile>
     <Compile Include="CacheConfiguration.cs" />
+    <Compile Include="ISerializerBuilder.cs" />
     <Compile Include="ProtobufSerializationConfiguration.cs" />
     <Compile Include="ProtobufSerializationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -2,11 +2,6 @@
 {
     public class ProtobufSerializationConfiguration
     {
-        public ProtobufSerializationConfiguration()
-        {
-            BuildSerializers = false;
-        }
-
-        public bool BuildSerializers { get; set; }
+        public ISerializerBuilder BuildSerializers { get; set; }
     }
 }
