@@ -84,6 +84,22 @@ namespace TagCache.Redis
             return default(T);
         }
 
+        public async Task<T> GetAsync<T>(string key)
+        {
+            var cacheItem = await _cacheItemProvider.GetAsync<T>(_client, key);
+            if (cacheItem != null)
+            {
+                if (CacheItemIsValid(cacheItem))
+                {
+                    Log("Get", key, "Found");
+
+                    return cacheItem.Value;
+                }
+            }
+            Log("Get", key, "Not Found");
+            return default(T);
+        }
+
         public List<T> GetByTag<T>(string tag)
         {
             var keys = _tagManager.GetKeysForTag(_client, tag);
@@ -123,21 +139,35 @@ namespace TagCache.Redis
             return true;
         }
 
-
         public void Set<T>(string key, T value, DateTime expires, string tag = null)
         {
-            var tags = string.IsNullOrEmpty(tag) ? null : new List<string> { tag };
-            Set(key, value, expires, tags);
+            Set<T>(key, value, expires, new[] { tag });
         }
 
         public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags)
         {
             Log("Set", key, null);
 
-            if (_cacheItemProvider.Set(_client, value, key, expires, tags))
+            var enumeratedTags = tags != null ? tags as string[] ?? tags.ToArray() : null;
+
+            if (_cacheItemProvider.Set(_client, value, key, expires, enumeratedTags))
             {
-                _tagManager.UpdateTags(_client, key, tags);
+                _tagManager.UpdateTags(_client, key, enumeratedTags);
             }
+        }
+
+        public async Task<bool> SetAsync<T>(string key, T value, DateTime expires, IEnumerable<string> tags)
+        {
+            Log("Set", key, null);
+
+            var enumeratedTags = tags as string[] ?? tags.ToArray();
+
+            if (await _cacheItemProvider.SetAsync(_client, value, key, expires, enumeratedTags))
+            {
+                _tagManager.UpdateTags(_client, key, enumeratedTags);
+            }
+
+            return true;
         }
 
 
@@ -169,10 +199,12 @@ namespace TagCache.Redis
             _expiryManager.RemoveKeyExpiry(_client, keys.ToArray());
         }
 
-        public async Task RemoveAsync(IRedisCacheItem item)
+        public async Task<bool> RemoveAsync(IRedisCacheItem item)
         {
-            _client.Remove(item.Key);
-            _tagManager.RemoveTags(_client, item);
+            var removeTask = _client.RemoveAsync(item.Key);
+            var removeTagTask = _tagManager.RemoveTagsAsync(_client, item);
+
+            return await removeTask && await removeTagTask;
         }
 
         public void Remove(IRedisCacheItem item)
@@ -196,6 +228,5 @@ namespace TagCache.Redis
             Remove(keys);
             return keys;
         }
-
     }
 }

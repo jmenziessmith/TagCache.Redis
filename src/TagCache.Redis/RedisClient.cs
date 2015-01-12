@@ -10,10 +10,9 @@ namespace TagCache.Redis
     {
         private const bool _isRedisExpiryEnabled = true;
         private const string _rootName = "_redisCache";
-
-
-        readonly int _db;
-        readonly int _timeout = 100;
+        
+        private readonly int _db;
+        private readonly int _timeout = 100;
         private readonly RedisConnectionManager _connectionManager;
 
 
@@ -44,7 +43,7 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> SetAsync(string key, RedisValue value, int expirySeconds)
+        public async Task<bool> SetAsync(string key, RedisValue value, int expirySeconds)
         {
             var conn = _connectionManager.GetConnection();
             await conn.GetDatabase(_db).StringSetAsync(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
@@ -61,10 +60,11 @@ namespace TagCache.Redis
             {
                 throw resultTask.Exception;
             }
+
             return resultTask.Result;
         }
 
-        private async Task<RedisValue?> GetAsync(string key)
+        public async Task<RedisValue?> GetAsync(string key)
         {
             var conn = _connectionManager.GetConnection();
             var value = await conn.GetDatabase(_db).StringGetAsync(key).ConfigureAwait(false);
@@ -73,25 +73,33 @@ namespace TagCache.Redis
 
         public bool Remove(string key)
         {
-            return Remove(new string[] { key });
+            return Remove(new[] { key });
         }
 
         public bool Remove(string[] keys)
         {
             var addTask = RemoveAsync(keys);
             addTask.Wait(_timeout);
+
             if (addTask.Exception != null)
             {
                 throw addTask.Exception;
             }
+
             if (addTask.Result == false)
             {
                 throw new Exception("Remove Failed");
             }
+
             return true;
         }
 
-        private async Task<bool> RemoveAsync(string[] keys)
+        public async Task<bool> RemoveAsync(string key)
+        {
+            return await RemoveAsync(new[] { key });
+        }
+
+        public async Task<bool> RemoveAsync(string[] keys)
         {
             var conn = _connectionManager.GetConnection();
             await conn
@@ -158,7 +166,7 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> RemoveKeyFromTagsAsync(string key, IEnumerable<string> tags)
+        public async Task<bool> RemoveKeyFromTagsAsync(string key, IEnumerable<string> tags)
         {
             if (tags != null && tags.Any())
             {
@@ -189,7 +197,7 @@ namespace TagCache.Redis
             }
         }
 
-        private async Task<bool> SetTagsForKeyAsync(string key, IEnumerable<string> tags)
+        public async Task<bool> SetTagsForKeyAsync(string key, IEnumerable<string> tags)
         {
             if (key != null)
             {
