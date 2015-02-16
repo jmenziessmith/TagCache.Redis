@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TagCache.Redis.ProtoBuf
+﻿namespace TagCache.Redis.ProtoBuf
 {
     /// <summary>
     /// An interface for Protobuf serializer builders.

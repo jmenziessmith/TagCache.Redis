@@ -7,6 +7,5 @@
             Serializer = new ProtoBufSerializationProvider(new ProtobufSerializationConfiguration());
             CacheItemFactory = new ProtobufRedisCacheItemFactory();
         }
-
     }
 }
