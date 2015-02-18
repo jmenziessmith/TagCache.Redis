@@ -40,16 +40,35 @@ namespace TagCache.Redis
         }
 
         /// <summary>
-        /// Removes the tags from the key list and the key from the tags list
+        /// Updates the tags for a <see cref="IRedisCacheItem" />
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="key"></param>
+        /// <param name="client">The client.</param>
+        /// <param name="cacheItem">The cache item.</param>
         public void UpdateTags(RedisClient client, IRedisCacheItem cacheItem)
         {
             SetTagsForKey(client, cacheItem);
             AddKeyToTags(client, cacheItem);
         }
 
+        /// <summary>
+        /// Updates the tags for a <see cref="IRedisCacheItem" />
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="cacheItem">The cache item.</param>
+        public async Task<bool> UpdateTagsAsync(RedisClient client, IRedisCacheItem cacheItem)
+        {
+            await SetTagsForKeyAsync(client, cacheItem);
+            await AddKeyToTagsAsync(client, cacheItem);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the tags.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="tags">The tags.</param>
         public void UpdateTags(RedisClient client, string key, IEnumerable<string> tags)
         {
             var cacheItem = _cacheItemFactory.Create(
@@ -57,6 +76,25 @@ namespace TagCache.Redis
                 tags : tags == null ? null :  tags.ToList()
             );
             UpdateTags(client, cacheItem);
+        }
+
+        /// <summary>
+        /// Updates the tags asynchronously.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="tags">The tags.</param>
+        /// <returns></returns>
+        public async Task<bool> UpdateTagsAsync(RedisClient client, string key, IEnumerable<string> tags)
+        {
+            var cacheItem = _cacheItemFactory.Create(
+                key: key,
+                tags: tags == null ? null : tags.ToList()
+            );
+            
+            await UpdateTagsAsync(client, cacheItem);
+
+            return true;
         }
 
         /// <summary>
@@ -75,6 +113,23 @@ namespace TagCache.Redis
             }
         }
 
+        /// <summary>
+        /// Stores all tags in a list for the given key
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cacheItem"></param>
+        public async Task<bool> SetTagsForKeyAsync(RedisClient client, IRedisCacheItem cacheItem)
+        {
+            if (cacheItem != null)
+            {
+                if (cacheItem.Tags != null && cacheItem.Tags.Any())
+                {
+                    await client.SetTagsForKeyAsync(cacheItem.Key, cacheItem.Tags);
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Stores the given items key in the tag list for each tag
@@ -93,6 +148,24 @@ namespace TagCache.Redis
             }
         }
 
+        /// <summary>
+        /// Stores the given items key in the tag list for each tag
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cacheItem"></param>
+        public async Task<bool> AddKeyToTagsAsync(RedisClient client, IRedisCacheItem cacheItem)
+        {
+            if (cacheItem != null)
+            {
+                if (cacheItem.Tags != null && cacheItem.Tags.Any())
+                {
+                    await RemoveKeyFromTagsAsync(client, cacheItem);
+                    await client.AddKeyToTagsAsync(cacheItem.Key, cacheItem.Tags);
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Removes the tags from the key list and the key from the tags list
@@ -133,6 +206,27 @@ namespace TagCache.Redis
                 RemoveKeyFromTags(client, cacheItem);
                 RemoveTagsForKey(client, cacheItem);
             }
+        }
+
+        /// <summary>
+        /// Removes the tags.
+        /// </summary>
+        /// <param name="client">The client.</param>
+        /// <param name="keys">The keys.</param>
+        public async Task<bool> RemoveTagsAsync(RedisClient client, string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                var tags = GetTagsForKey(client, key);
+                var cacheItem = _cacheItemFactory.Create(
+                    key: key,
+                    tags: tags.ToList()
+                    );
+                await RemoveKeyFromTagsAsync(client, cacheItem);
+                await RemoveTagsForKeyAsync(client, cacheItem);
+            }
+
+            return true;
         }
 
 

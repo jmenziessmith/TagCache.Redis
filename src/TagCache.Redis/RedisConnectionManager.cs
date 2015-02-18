@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using StackExchange.Redis;
 
 namespace TagCache.Redis
@@ -28,7 +29,7 @@ namespace TagCache.Redis
         private ConfigurationOptions BuildConfigurationOptions()
         {
             var result = ConfigurationOptions.Parse(ConnectionString);
-            
+
             if (SyncTimeout != null)
             {
                 result.SyncTimeout = SyncTimeout.Value;
@@ -60,9 +61,27 @@ namespace TagCache.Redis
                 }
             }
 
-            return connection;  
+            return connection;
         }
-        
+
+        public async Task<ConnectionMultiplexer> GetConnectionAsync()
+        {
+            var connection = _connection;
+
+            if (connection == null)
+            {
+                if (_connection == null)
+                {
+                    var options = BuildConfigurationOptions();
+                    _connection = await ConnectionMultiplexer.ConnectAsync(options);
+                }
+
+                connection = _connection;
+            }
+
+            return connection;
+        }
+
         public void Reset(bool abort = false)
         {
             lock (_connectionLock)

@@ -24,5 +24,13 @@ namespace TagCache.Redis.Interfaces
         /// </summary>
         /// <returns></returns>
         string[] RemoveExpiredKeys();
+
+        Task<bool> RemoveAsync(string[] keys);
+
+        /// <summary>
+        /// This should be called at regular intervals in case the active version of redis does not support subscriptions to expiries
+        /// </summary>
+        /// <returns></returns>
+        Task<string[]> RemoveExpiredKeysAsync();
     }
 }

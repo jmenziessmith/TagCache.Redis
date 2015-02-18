@@ -94,10 +94,6 @@
     <Compile Include="RedisExpiryManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\AutoProtobuf\src\TagCache.Redis.AutoProtobuf\TagCache.Redis.AutoProtobuf.csproj">
-      <Project>{8a931d33-73e7-4338-a7c1-f48168f5d526}</Project>
-      <Name>TagCache.Redis.AutoProtobuf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TagCache.Redis.FastJson\TagCache.Redis.FastJson.csproj">
       <Project>{0089eee8-9dfd-41c0-9128-70bee1c253d8}</Project>
       <Name>TagCache.Redis.FastJson</Name>

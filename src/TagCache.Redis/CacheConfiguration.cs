@@ -59,8 +59,6 @@ namespace TagCache.Redis
 
     public class RedisClientConfiguration
     {
-        private ConnectionMultiplexer _connection;
-
         public const string _DefaultHost = "localhost";
         public const int _DefaultDbNo = 0;
         public const int _DefaultTimeoutMilliseconds = 1000;
@@ -79,7 +77,6 @@ namespace TagCache.Redis
             get { return _dbNo ?? _DefaultDbNo; }
             set { _dbNo = value; }
         }
-
 
         private int? _timeoutMilliseconds;
 

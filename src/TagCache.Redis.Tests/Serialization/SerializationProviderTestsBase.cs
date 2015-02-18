@@ -11,11 +11,18 @@ namespace TagCache.Redis.Tests.Serialization
 {
     public abstract class SerializationProviderTestsBase<TCacheItem> where TCacheItem : class, IRedisCacheItem<TestObject>, new()
     {
+        /// <summary>
+        /// Setups this instance.
+        /// </summary>
         [TestFixtureSetUp]
         public void Setup()
         {
             if (GetSerializer() is ProtoBufSerializationProvider)
             {
+                //Setup attributeless serialization settings for TestObject.
+                var testObjectType = RuntimeTypeModel.Default.Add(typeof(TestObject), false);
+                testObjectType.Add("Foo", "Bar", "Score", "SomeList", "Child");
+
                 //Setup attributeless serialization settings for RedisCacheItem.
                 var redisCacheItemType = RuntimeTypeModel.Default.Add(typeof(RedisCacheItem<TestObject>), false);
                 redisCacheItemType.Add("Key", "Tags", "Expires", "Value");

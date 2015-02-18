@@ -14,8 +14,7 @@ namespace TagCache.Redis
         private RedisTagManager _tagManager;
         private RedisExpiryManager _expiryManager;
         private ISerializationProvider _serializer;
-        private CacheConfiguration _cacheConfiguration;
-
+        
         public IRedisCacheLogger Logger { get; set; }
 
         // singleton dictionary<host,expirehandler> 
@@ -133,7 +132,9 @@ namespace TagCache.Redis
         {
             if (item.Expires < DateTime.Now)
             {
+#pragma warning disable 4014
                 RemoveAsync(item); // do not wait
+#pragma warning restore 4014
                 return false;
             }
             return true;
@@ -141,7 +142,7 @@ namespace TagCache.Redis
 
         public void Set<T>(string key, T value, DateTime expires, string tag = null)
         {
-            Set<T>(key, value, expires, new[] { tag });
+            Set<T>(key, value, expires, tag != null ? new[] { tag } : null);
         }
 
         public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags)
@@ -199,6 +200,15 @@ namespace TagCache.Redis
             _expiryManager.RemoveKeyExpiry(_client, keys.ToArray());
         }
 
+        public async Task<bool> RemoveAsync(string[] keys)
+        {
+            await _client.RemoveAsync(keys);
+            await _tagManager.RemoveTagsAsync(_client, keys);
+            await _expiryManager.RemoveKeyExpiryAsync(_client, keys.ToArray());
+
+            return true;
+        }
+
         public async Task<bool> RemoveAsync(IRedisCacheItem item)
         {
             var removeTask = _client.RemoveAsync(item.Key);
@@ -226,6 +236,18 @@ namespace TagCache.Redis
             var maxDate = DateTime.Now.AddMinutes(CacheConfiguration.MinutesToRemoveAfterExpiry);
             var keys = _expiryManager.GetExpiredKeys(_client, maxDate);
             Remove(keys);
+            return keys;
+        }
+
+        /// <summary>
+        /// This should be called at regular intervals in case the active version of redis does not support subscriptions to expiries
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string[]> RemoveExpiredKeysAsync()
+        {
+            var maxDate = DateTime.Now.AddMinutes(CacheConfiguration.MinutesToRemoveAfterExpiry);
+            var keys = await _expiryManager.GetExpiredKeysAsync(_client, maxDate);
+            await RemoveAsync(keys);
             return keys;
         }
     }
