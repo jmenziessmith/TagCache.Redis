@@ -185,7 +185,7 @@ namespace TagCache.Redis
 
             var enumeratedTags = tags != null ? tags as string[] ?? tags.ToArray() : null;
 
-            if (_cacheItemProvider.Set(_client, value, key, expires, enumeratedTags))
+            if (_cacheItemProvider.Set<T>(_client, value, key, expires, enumeratedTags))
             {
                 _tagManager.UpdateTags(_client, key, enumeratedTags);
             }
@@ -195,11 +195,11 @@ namespace TagCache.Redis
         {
             Log("Set", key, null);
 
-            var enumeratedTags = tags as string[] ?? tags.ToArray();
+            var enumeratedTags = tags != null ? tags as string[] ?? tags.ToArray() : null;
 
-            if (await _cacheItemProvider.SetAsync(_client, value, key, expires, enumeratedTags))
+            if (await _cacheItemProvider.SetAsync<T>(_client, value, key, expires, enumeratedTags))
             {
-                _tagManager.UpdateTags(_client, key, enumeratedTags);
+                await _tagManager.UpdateTagsAsync(_client, key, enumeratedTags);
             }
 
             return true;
