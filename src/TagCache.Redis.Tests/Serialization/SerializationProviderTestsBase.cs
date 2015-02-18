@@ -33,7 +33,7 @@ namespace TagCache.Redis.Tests.Serialization
         {
             var value = new TCacheItem
             {
-                Expires = new DateTime(2014, 01, 02),
+                Expires = new DateTime(2014, 01, 02).ToUniversalTime(),
                 Key = GetSerializer().GetType().Name + "Tests.Key",
                 Value = new TestObject
                 {

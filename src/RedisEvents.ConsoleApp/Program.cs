@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using BookSleeve;
 
 namespace RedisEvents.ConsoleApp
 {
@@ -10,9 +9,9 @@ namespace RedisEvents.ConsoleApp
     {
         static int received = 0;
 
-        public static BookSleeve.RedisSubscriberConnection _subConn { get; set; }
-        public static BookSleeve.RedisConnection _conn { get; set; }
-        public static BookSleeve.RedisSubscriberConnection channel { get; set; }
+        public static RedisSubscriberConnection _subConn { get; set; }
+        public static RedisConnection _conn { get; set; }
+        public static RedisSubscriberConnection channel { get; set; }
 
         private const int _db = 0;
 
@@ -24,25 +23,25 @@ namespace RedisEvents.ConsoleApp
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            System.Console.WriteLine("Start");
+            Console.WriteLine("Start");
 
-            _conn = new BookSleeve.RedisConnection("localhost");
+            _conn = new RedisConnection("localhost");
             var c = _conn.Open();
             c.Wait();
-            System.Console.WriteLine("Conn : " + _conn.State);
+            Console.WriteLine("Conn : " + _conn.State);
 
             _conn.Keys.Remove(_db, "_expireys");
 
 
-            _subConn = new BookSleeve.RedisSubscriberConnection("localhost");
+            _subConn = new RedisSubscriberConnection("localhost");
             var s = _subConn.Open();
             s.Wait();
-            System.Console.WriteLine("SubConn : " + _subConn.State);
+            Console.WriteLine("SubConn : " + _subConn.State);
 
             channel = _conn.GetOpenSubscriberChannel();
-            System.Threading.Thread.Sleep(100);
+            Thread.Sleep(100);
 
-            System.Console.WriteLine("Channel : " + channel.State);
+            Console.WriteLine("Channel : " + channel.State);
 
             channel.PatternSubscribe("*:expired", OnExecutionCompleted).Wait();
 
@@ -50,7 +49,7 @@ namespace RedisEvents.ConsoleApp
 
 
             Set(1, 4);
-            System.Threading.Thread.Sleep((6 * 1000) );
+            Thread.Sleep((6 * 1000) );
             if (received > 0)
             {
                 Console.WriteLine("Subscriptions have worked");
@@ -86,9 +85,9 @@ namespace RedisEvents.ConsoleApp
         public static void OnExecutionCompleted(string key, byte[] message)
         {
             received++;
-            var msg = System.Text.Encoding.UTF8.GetString(message);
+            var msg = Encoding.UTF8.GetString(message);
 
-            System.Console.WriteLine("ExecutionComplete : " + key + " - " + msg);
+            Console.WriteLine("ExecutionComplete : " + key + " - " + msg);
         }
          
  

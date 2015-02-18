@@ -62,7 +62,7 @@ namespace TagCache.Redis
                     Logger.Log(method, arg, message);
                 }
             }
-            catch
+            catch //Itentional exception supression
             {
             }
         }
@@ -128,6 +128,35 @@ namespace TagCache.Redis
             return null;
         }
 
+        public async Task<List<T>> GetByTagAsync<T>(string tag)
+        {
+            var keys = await _tagManager.GetKeysForTagAsync(_client, tag);
+            if (keys != null && keys.Length > 0)
+            {
+                var items = await _cacheItemProvider.GetManyAsync<T>(_client, keys);
+
+                var result = new List<T>();
+
+                foreach (var item in items)
+                {
+                    if (CacheItemIsValid(item))
+                    {
+                        var value = item.Value;
+                        if (value != null)
+                        {
+                            result.Add(value);
+                        }
+                    }
+                }
+
+                Log("GetByTag", tag, "Found");
+                return result;
+            }
+
+            Log("GetByTag", tag, "Not Found");
+            return null;
+        }
+
         private bool CacheItemIsValid(IRedisCacheItem item)
         {
             if (item.Expires < DateTime.Now)
@@ -143,6 +172,11 @@ namespace TagCache.Redis
         public void Set<T>(string key, T value, DateTime expires, string tag = null)
         {
             Set<T>(key, value, expires, tag != null ? new[] { tag } : null);
+        }
+
+        public async Task<bool> SetAsync<T>(string key, T value, DateTime expires, string tag = null)
+        {
+            return await SetAsync<T>(key, value, expires, tag != null ? new[] { tag } : null);
         }
 
         public void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags)
@@ -171,11 +205,16 @@ namespace TagCache.Redis
             return true;
         }
 
-
         public void Remove(string key)
         {
             Log("Remove", key, null);
             Remove(new[] { key });
+        }
+
+        public async Task<bool> RemoveAsync(string key)
+        {
+            Log("Remove", key, null);
+            return await RemoveAsync(new[] { key });
         }
 
         public void RemoveByTag(string tag)
@@ -188,9 +227,26 @@ namespace TagCache.Redis
             }
         }
 
+        public async Task<bool> RemoveByTagAsync(string tag)
+        {
+            Log("RemoveByTag", tag, null);
+            var keys = await _tagManager.GetKeysForTagAsync(_client, tag);
+            if (keys != null && keys.Length > 0)
+            {
+                await RemoveAsync(keys);
+            }
+
+            return true;
+        }
+
         public void Remove(IEnumerable<string> keys)
         {
             Remove(keys.ToArray());
+        }
+
+        public async Task<bool> RemoveAsync(IEnumerable<string> keys)
+        {
+            return await RemoveAsync(keys.ToArray());
         }
 
         public void Remove(string[] keys)
@@ -219,12 +275,8 @@ namespace TagCache.Redis
 
         public void Remove(IRedisCacheItem item)
         {
-            var task = Task.Run(() => RemoveAsync(item));
-            task.Wait();
-            if (task.Exception != null)
-            {
-                throw task.Exception;
-            }
+            _client.Remove(item.Key);
+            _tagManager.RemoveTags(_client, item);
         }
 
         /// <summary>

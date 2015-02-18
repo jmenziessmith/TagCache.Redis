@@ -8,14 +8,28 @@ namespace TagCache.Redis.Interfaces
     {
         T Get<T>(string key);
         Task<T> GetAsync<T>(string key);
+
         List<T> GetByTag<T>(string tag);
+        Task<List<T>> GetByTagAsync<T>(string tag);
+
         void Set<T>(string key, T value, DateTime expires, string tag = null);
+        Task<bool> SetAsync<T>(string key, T value, DateTime expires, string tag = null);
+
         void Set<T>(string key, T value, DateTime expires, IEnumerable<string> tags);
         Task<bool> SetAsync<T>(string key, T value, DateTime expires, IEnumerable<string> tags);
+
         void Remove(string key);
-        void RemoveByTag(string tag);
+        Task<bool> RemoveAsync(string key);
+
         void Remove(IEnumerable<string> keys);
+        Task<bool> RemoveAsync(IEnumerable<string> keys);
+
         void Remove(string[] keys);
+        Task<bool> RemoveAsync(string[] keys);
+
+        void RemoveByTag(string tag);
+        Task<bool> RemoveByTagAsync(string tag);
+
         Task<bool> RemoveAsync(IRedisCacheItem item);
         void Remove(IRedisCacheItem item);
 
@@ -24,8 +38,6 @@ namespace TagCache.Redis.Interfaces
         /// </summary>
         /// <returns></returns>
         string[] RemoveExpiredKeys();
-
-        Task<bool> RemoveAsync(string[] keys);
 
         /// <summary>
         /// This should be called at regular intervals in case the active version of redis does not support subscriptions to expiries

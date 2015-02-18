@@ -45,7 +45,7 @@ namespace TagCache.Redis
 
         public async Task<bool> SetAsync(string key, RedisValue value, int expirySeconds)
         {
-            var conn = _connectionManager.GetConnection();
+            var conn = await _connectionManager.GetConnectionAsync();
             await conn.GetDatabase(_db).StringSetAsync(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
 
             return true;
@@ -101,7 +101,7 @@ namespace TagCache.Redis
 
         public async Task<bool> RemoveAsync(string[] keys)
         {
-            var conn = _connectionManager.GetConnection();
+            var conn = await _connectionManager.GetConnectionAsync();
             await conn
                     .GetDatabase(_db)
                     .KeyDeleteAsync(keys.Select(key => (RedisKey)key).ToArray())
@@ -115,6 +115,12 @@ namespace TagCache.Redis
         {
             var conn = _connectionManager.GetConnection();
             return conn.GetDatabase(_db).SetMembers(TagKeysListKey(tag)).Select(r => !r.IsNullOrEmpty ? (string)r : null).ToArray();
+        }
+
+        public async Task<string[]> GetKeysForTagAsync(string tag)
+        {
+            var conn = await _connectionManager.GetConnectionAsync();
+            return (await conn.GetDatabase(_db).SetMembersAsync(TagKeysListKey(tag))).Select(r => !r.IsNullOrEmpty ? (string)r : null).ToArray();
         }
 
         public void AddKeyToTags(string key, IEnumerable<string> tags)
@@ -320,27 +326,24 @@ namespace TagCache.Redis
 
         public async Task<bool> RemoveTimeSetAsync(string setKey, string[] keys)
         {
-            var conn = _connectionManager.GetConnection();
+            var conn = await _connectionManager.GetConnectionAsync();
             await conn.GetDatabase(_db).SortedSetRemoveAsync(setKey, keys.Select(k => (RedisValue)k).ToArray());
             return true;
+        }
+        
+        public async Task<string[]> GetFromTimeSetAsync(string setKey, DateTime maxDate)
+        {
+            var conn = await _connectionManager.GetConnectionAsync();
+            var timeAsRank = Helpers.TimeToRank(maxDate);
+            var keys = await conn.GetDatabase(_db).SortedSetRangeByScoreAsync(setKey, start: 0, stop: timeAsRank);
+            return keys.Select(k => k.ToString()).ToArray();
         }
 
         public string[] GetFromTimeSet(string setKey, DateTime maxDate)
         {
-            var task = GetFromTimeSetAsync(setKey, maxDate);
-            task.Wait(_timeout);
-            if (task.Exception != null)
-            {
-                throw task.Exception;
-            }
-            return task.Result;
-        }
-
-        public async Task<string[]> GetFromTimeSetAsync(string setKey, DateTime maxDate)
-        {
             var conn = _connectionManager.GetConnection();
             var timeAsRank = Helpers.TimeToRank(maxDate);
-            var keys = await conn.GetDatabase(_db).SortedSetRangeByScoreAsync(setKey, start: 0, stop: timeAsRank);
+            var keys = conn.GetDatabase(_db).SortedSetRangeByScore(setKey, start: 0, stop: timeAsRank);
             return keys.Select(k => k.ToString()).ToArray();
         }
 

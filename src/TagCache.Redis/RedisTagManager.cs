@@ -28,6 +28,21 @@ namespace TagCache.Redis
             }
             return null;
         }
+
+        /// <summary>
+        /// Retrieves all keys from the tag lists for the given tag 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="cacheItem"></param>
+        public async Task<string[]> GetKeysForTagAsync(RedisClient client, string tag)
+        {
+            var keys = await client.GetKeysForTagAsync(tag);
+            if (keys != null)
+            {
+                return keys.ToArray();
+            }
+            return null;
+        }
         
         private string[] GetTagsForKey(RedisClient client, string key)
         {

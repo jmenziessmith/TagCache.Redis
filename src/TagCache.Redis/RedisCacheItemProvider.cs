@@ -55,6 +55,22 @@ namespace TagCache.Redis
             return result;
         }
 
+        public async Task<List<IRedisCacheItem<T>>> GetManyAsync<T>(RedisClient client, string[] keys)
+        {
+            var result = new List<IRedisCacheItem<T>>();
+
+            foreach (var key in keys)
+            {
+                var r = await GetAsync<T>(client, key);
+                if (r != null)
+                {
+                    result.Add(r);
+                }
+            }
+
+            return result;
+        }
+
         public async Task<bool> SetAsync<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
         {
             if (value == null)
