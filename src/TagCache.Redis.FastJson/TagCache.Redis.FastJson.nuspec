@@ -12,5 +12,8 @@
     <description>$description$</description>
     <copyright>Copyright 2015</copyright>
     <tags>Redis Distributed Cache Caching Tag Tags Tagging Tagged JSON FastJSON</tags>
+    <dependencies>
+      <dependency id="FN.TagCache.Redis" version="$version$-beta" />
+    </dependencies>
   </metadata>
 </package>
