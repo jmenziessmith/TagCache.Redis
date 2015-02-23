@@ -1,5 +1,4 @@
-﻿using StackExchange.Redis;
-using TagCache.Redis.Interfaces;
+﻿using TagCache.Redis.Interfaces;
 using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis

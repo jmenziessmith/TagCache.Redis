@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using StackExchange.Redis;
 
 namespace TagCache.Redis
@@ -7,7 +6,7 @@ namespace TagCache.Redis
     public class RedisConnectionManager : IDisposable
     {
         private readonly object _connectionLock = new object();
-        private static ConnectionMultiplexer _connection;
+        private Lazy<ConnectionMultiplexer> _connection;
 
         public string ConnectionString { get; set; }
         public int? ConnectTimeout { get; set; }
@@ -24,6 +23,7 @@ namespace TagCache.Redis
             MaxUnsent = maxUnsent;
             AllowAdmin = allowAdmin;
             SyncTimeout = syncTimeout;
+            _connection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(BuildConfigurationOptions()));
         }
 
         private ConfigurationOptions BuildConfigurationOptions()
@@ -46,51 +46,15 @@ namespace TagCache.Redis
 
         public ConnectionMultiplexer GetConnection()
         {
-            var connection = _connection;
-
-            if (connection == null)
-            {
-                lock (_connectionLock)
-                {
-                    if (_connection == null)
-                    {
-                        var options = BuildConfigurationOptions();
-                        _connection = ConnectionMultiplexer.Connect(options);
-                    }
-                    connection = _connection;
-                }
-            }
-
-            return connection;
-        }
-
-        public async Task<ConnectionMultiplexer> GetConnectionAsync()
-        {
-            var connection = _connection;
-
-            if (connection == null)
-            {
-                if (_connection == null)
-                {
-                    var options = BuildConfigurationOptions();
-                    _connection = await ConnectionMultiplexer.ConnectAsync(options);
-                }
-
-                connection = _connection;
-            }
-
-            return connection;
+            return _connection.Value;
         }
 
         public void Reset(bool abort = false)
         {
             lock (_connectionLock)
             {
-                if (_connection != null)
-                {
-                    _connection.Close(abort);
-                    _connection = null;
-                }
+                _connection.Value.Close(abort);
+                _connection = null;
             }
         }
 
@@ -98,11 +62,8 @@ namespace TagCache.Redis
         {
             lock (_connectionLock)
             {
-                if (_connection != null)
-                {
-                    _connection.Dispose();
-                    _connection = null;
-                }
+                _connection.Value.Dispose();
+                _connection = null;
             }
         }
     }
