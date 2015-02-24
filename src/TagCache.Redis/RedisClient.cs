@@ -31,16 +31,8 @@ namespace TagCache.Redis
 
         public void Set(string key, RedisValue value, int expirySeconds)
         {
-            var addTask = SetAsync(key, value, expirySeconds);
-            addTask.Wait(_timeout);
-            if (addTask.Exception != null)
-            {
-                throw addTask.Exception;
-            }
-            if (addTask.Result == false)
-            {
-                throw new Exception("Add Failed");
-            }
+            var conn = _connectionManager.GetConnection();
+            conn.GetDatabase(_db).StringSet(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null);
         }
 
         public async Task<bool> SetAsync(string key, RedisValue value, int expirySeconds)
@@ -49,19 +41,13 @@ namespace TagCache.Redis
             await conn.GetDatabase(_db).StringSetAsync(key, value, _isRedisExpiryEnabled ? (TimeSpan?)TimeSpan.FromSeconds(expirySeconds) : null).ConfigureAwait(false);
 
             return true;
-
         }
 
         public RedisValue? Get(string key)
         {
-            var resultTask = GetAsync(key);
-            resultTask.Wait(_timeout);
-            if (resultTask.Exception != null)
-            {
-                throw resultTask.Exception;
-            }
-
-            return resultTask.Result;
+            var conn = _connectionManager.GetConnection();
+            var value = conn.GetDatabase(_db).StringGet(key);
+            return value.HasValue ? (RedisValue?)value : null;
         }
 
         public async Task<RedisValue?> GetAsync(string key)
@@ -78,18 +64,10 @@ namespace TagCache.Redis
 
         public bool Remove(string[] keys)
         {
-            var addTask = RemoveAsync(keys);
-            addTask.Wait(_timeout);
-
-            if (addTask.Exception != null)
-            {
-                throw addTask.Exception;
-            }
-
-            if (addTask.Result == false)
-            {
-                throw new Exception("Remove Failed");
-            }
+            var conn = _connectionManager.GetConnection();
+            conn
+                .GetDatabase(_db)
+                .KeyDelete(keys.Select(key => (RedisKey) key).ToArray());
 
             return true;
         }
@@ -125,15 +103,24 @@ namespace TagCache.Redis
 
         public void AddKeyToTags(string key, IEnumerable<string> tags)
         {
-            var addTask = AddKeyToTagsAsync(key, tags);
-            addTask.Wait(_timeout);
-            if (addTask.Exception != null)
+            var enumerable = tags as string[] ?? tags.ToArray();
+            if (key != null && tags != null && enumerable.Any())
             {
-                throw addTask.Exception;
-            }
-            if (addTask.Result == false)
-            {
-                throw new Exception("Add Tags Failed");
+
+                var conn = _connectionManager.GetConnection();
+
+                var trans = conn
+                                .GetDatabase(_db)
+                                .CreateTransaction();
+
+                foreach (var tag in enumerable)
+                {
+#pragma warning disable 4014
+                    trans.SetAddAsync(TagKeysListKey(tag), key);
+#pragma warning restore 4014
+                }
+                
+                trans.Execute();
             }
         }
 
@@ -162,15 +149,19 @@ namespace TagCache.Redis
 
         public void RemoveKeyFromTags(string key, IEnumerable<string> tags)
         {
-            var addTask = RemoveKeyFromTagsAsync(key, tags);
-            addTask.Wait(_timeout);
-            if (addTask.Exception != null)
+            var enumeratedTags = tags as string[] ?? tags.ToArray();
+            if (tags != null && enumeratedTags.Any())
             {
-                throw addTask.Exception;
-            }
-            if (addTask.Result == false)
-            {
-                throw new Exception("Remove Tags Failed");
+                var conn = _connectionManager.GetConnection();
+                var trans = conn.GetDatabase(_db).CreateTransaction();
+
+                foreach (var tag in enumeratedTags)
+                {
+#pragma warning disable 4014
+                    trans.SetRemoveAsync(TagKeysListKey(tag), key); //Don't await as tasks are only executed when transaction is executed
+#pragma warning restore 4014
+                }
+                trans.Execute();
             }
         }
 
@@ -195,15 +186,23 @@ namespace TagCache.Redis
 
         public void SetTagsForKey(string key, IEnumerable<string> tags)
         {
-            var addTask = SetTagsForKeyAsync(key, tags);
-            addTask.Wait();
-            if (addTask.Exception != null)
+            if (key != null)
             {
-                throw addTask.Exception;
-            }
-            if (addTask.Result == false)
-            {
-                throw new Exception("Set Tags For Key Failed");
+                var conn = _connectionManager.GetConnection();
+                var trans = conn.GetDatabase(_db).CreateTransaction();
+
+#pragma warning disable 4014
+                trans.KeyDeleteAsync(KeyTagsListKey(key)); // Empty list. Don't await as all will be executed on transaction
+#pragma warning restore 4014
+
+                if (tags != null && tags.Any())
+                {
+#pragma warning disable 4014
+                    trans.SetAddAsync(KeyTagsListKey(key), tags.Select(t => (RedisValue)t).ToArray()); // Add each tag. Don't await as all will be executed on transaction
+#pragma warning restore 4014
+                }
+
+                trans.Execute();
             }
         }
 
@@ -232,15 +231,11 @@ namespace TagCache.Redis
 
         public void RemoveTagsForKey(string key)
         {
-            var addTask = RemoveTagsForKeyAsync(key);
-            addTask.Wait();
-            if (addTask.Exception != null)
+            if (key != null)
             {
-                throw addTask.Exception;
-            }
-            if (addTask.Result == false)
-            {
-                throw new Exception("Set Tags For Key Failed");
+                var conn = _connectionManager.GetConnection();
+
+                conn.GetDatabase(_db).KeyDelete(KeyTagsListKey(key)); // empty list
             }
         }
 
@@ -257,13 +252,11 @@ namespace TagCache.Redis
 
         public string[] GetTagsForKey(string key)
         {
-            var addTask = GetTagsForKeyAsync(key);
-            addTask.Wait(_timeout);
-            if (addTask.Exception != null)
-            {
-                throw addTask.Exception;
-            }
-            return addTask.Result;
+            var conn = _connectionManager.GetConnection();
+            var result = conn.GetDatabase(_db).SetMembers(KeyTagsListKey(key));
+            return result
+                    .Select(r => !r.IsNullOrEmpty ? r.ToString() : null)
+                    .ToArray();
         }
 
         private async Task<string[]> GetTagsForKeyAsync(string key)
@@ -291,18 +284,10 @@ namespace TagCache.Redis
 
         public bool SetTimeSet(string setKey, string value, DateTime date)
         {
-            var task = SetTimeSetAsync(setKey, value, date);
-            task.Wait(_timeout);
-            if (task.Exception != null)
-            {
-                throw task.Exception;
-            }
-            if (task.Result == false)
-            {
-                throw new Exception("Set Failed");
-            }
-            return true;
+            var conn = _connectionManager.GetConnection();
+            return conn.GetDatabase(_db).SortedSetAdd(setKey, value, Helpers.TimeToRank(date));
         }
+
         public async Task<bool> SetTimeSetAsync(string setKey, string value, DateTime date)
         {
             var conn = _connectionManager.GetConnection();
@@ -311,16 +296,8 @@ namespace TagCache.Redis
 
         public bool RemoveTimeSet(string setKey, string[] keys)
         {
-            var task = RemoveTimeSetAsync(setKey, keys);
-            task.Wait(_timeout);
-            if (task.Exception != null)
-            {
-                throw task.Exception;
-            }
-            if (task.Result == false)
-            {
-                throw new Exception("Remove Failed");
-            }
+            var conn = _connectionManager.GetConnection();
+            conn.GetDatabase(_db).SortedSetRemove(setKey, keys.Select(k => (RedisValue)k).ToArray());
             return true;
         }
 
