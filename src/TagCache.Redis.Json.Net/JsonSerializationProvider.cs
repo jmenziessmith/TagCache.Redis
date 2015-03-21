@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using TagCache.Redis.Interfaces;
+using Newtonsoft.Json;
 
 namespace TagCache.Redis.Json.Net
 {

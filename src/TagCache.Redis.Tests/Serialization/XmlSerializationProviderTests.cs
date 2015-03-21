@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using NUnit.Framework; 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NUnit.Framework;
 using TagCache.Redis.Interfaces;
 using TagCache.Redis.Serialization; 
 

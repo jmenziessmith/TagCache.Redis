@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using ProtoBuf;
 using TagCache.Redis.Interfaces;
 using TagCache.Redis.ProtoBuf;
 

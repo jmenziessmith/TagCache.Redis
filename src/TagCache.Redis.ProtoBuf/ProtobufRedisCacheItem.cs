@@ -12,10 +12,10 @@ namespace TagCache.Redis.ProtoBuf
         [ProtoMember(1)]
         public virtual string Key { get; set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(1)]
         public virtual List<string> Tags { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(1)]
         public virtual DateTime Expires { get; set; }
     }
 
@@ -26,13 +26,13 @@ namespace TagCache.Redis.ProtoBuf
         [ProtoMember(1)]
         public override string Key { get; set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(1)]
         public override List<string> Tags { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(1)]
         public override DateTime Expires { get; set; }
 
-        [ProtoMember(4)]
+        [ProtoMember(1)]
         public T Value { get; set; }
     }
 }

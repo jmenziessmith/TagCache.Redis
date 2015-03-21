@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using TagCache.Redis.Json.Net;
-using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis.Tests
 {

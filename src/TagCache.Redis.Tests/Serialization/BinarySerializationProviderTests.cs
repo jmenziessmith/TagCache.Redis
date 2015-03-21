@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TagCache.Redis.Interfaces;
-using TagCache.Redis.Serialization; 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using TagCache.Redis.Serialization;
 
 namespace TagCache.Redis.Tests.Serialization
 {

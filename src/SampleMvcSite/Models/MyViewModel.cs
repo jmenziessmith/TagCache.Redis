@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace SampleMvcSite.Models
+﻿namespace SampleMvcSite.Models
 {
     public class MyViewModel
     {
