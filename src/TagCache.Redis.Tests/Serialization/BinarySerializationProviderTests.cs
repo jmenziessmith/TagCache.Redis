@@ -9,7 +9,7 @@ using System.Linq;
 namespace TagCache.Redis.Tests.Serialization
 {
     [TestFixture]
-    public class BinarySerializationProviderTests : SerializationProviderTestsBase
+    public class BinarySerializationProviderTests : SerializationProviderTestsBase<RedisCacheItem<TestObject>>
     {
         protected override ISerializationProvider GetSerializer()
         {

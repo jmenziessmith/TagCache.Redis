@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TagCache.Redis
 {
@@ -21,9 +22,20 @@ namespace TagCache.Redis
             client.RemoveTimeSet(_setKey, keys);
         }
 
+        public async Task<bool> RemoveKeyExpiryAsync(RedisClient client, string[] keys)
+        {
+            await client.RemoveTimeSetAsync(_setKey, keys);
+            return true;
+        }
+
         public string[] GetExpiredKeys(RedisClient client, DateTime maxDate)
         {
             return client.GetFromTimeSet(_setKey, maxDate);
+        }
+
+        public async Task<string[]> GetExpiredKeysAsync(RedisClient client, DateTime maxDate)
+        {
+            return await client.GetFromTimeSetAsync(_setKey, maxDate);
         }
     }
 }

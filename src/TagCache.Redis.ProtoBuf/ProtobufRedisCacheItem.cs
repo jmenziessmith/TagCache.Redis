@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ProtoBuf;
 using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis.ProtoBuf
 { 
     [Serializable]
-    [ProtoContract]
+    [ProtoContract]    
     public class ProtobufRedisCacheItem : IRedisCacheItem
     {
         [ProtoMember(1)]
@@ -24,7 +21,7 @@ namespace TagCache.Redis.ProtoBuf
 
     [Serializable]
     [ProtoContract]
-    public class ProtobufRedisCacheItem<T> : RedisCacheItem, IRedisCacheItem<T>
+    public class ProtobufRedisCacheItem<T> : ProtobufRedisCacheItem, IRedisCacheItem<T>
     {
         [ProtoMember(1)]
         public override string Key { get; set; }

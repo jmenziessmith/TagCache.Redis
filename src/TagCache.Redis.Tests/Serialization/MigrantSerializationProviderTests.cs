@@ -5,7 +5,7 @@ using TagCache.Redis.Migrant;
 namespace TagCache.Redis.Tests.Serialization
 {
     [TestFixture(Category = "Migrant tests,serialization")]
-    public class MigrantSerializationProviderTests : SerializationProviderTestsBase
+    public class MigrantSerializationProviderTests : SerializationProviderTestsBase<RedisCacheItem<TestObject>>
     {
         protected override ISerializationProvider GetSerializer()
         {

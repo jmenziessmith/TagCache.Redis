@@ -5,7 +5,6 @@ namespace TagCache.Redis.Tests
     [TestFixture]
     public class TagCacheTests
     {
-        private string _redisHost = "localhost";
         private int _redisDB = 0;
 
         private RedisClient newRedisClient()

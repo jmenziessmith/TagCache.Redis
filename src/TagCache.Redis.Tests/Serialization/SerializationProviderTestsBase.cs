@@ -9,25 +9,32 @@ using TagCache.Redis.ProtoBuf;
 
 namespace TagCache.Redis.Tests.Serialization
 {
-    public abstract class SerializationProviderTestsBase
+    public abstract class SerializationProviderTestsBase<TCacheItem> where TCacheItem : class, IRedisCacheItem<TestObject>, new()
     {
+        /// <summary>
+        /// Setups this instance.
+        /// </summary>
         [TestFixtureSetUp]
         public void Setup()
         {
             if (GetSerializer() is ProtoBufSerializationProvider)
             {
+                //Setup attributeless serialization settings for TestObject.
+                var testObjectType = RuntimeTypeModel.Default.Add(typeof(TestObject), false);
+                testObjectType.Add("Foo", "Bar", "Score", "SomeList", "Child");
+
                 //Setup attributeless serialization settings for RedisCacheItem.
                 var redisCacheItemType = RuntimeTypeModel.Default.Add(typeof(RedisCacheItem<TestObject>), false);
                 redisCacheItemType.Add("Key", "Tags", "Expires", "Value");
             }
         }
 
-        protected static RedisCacheItem<TestObject> CreateTestObject()
+        protected TCacheItem CreateTestObject()
         {
-            var value = new RedisCacheItem<TestObject>
+            var value = new TCacheItem
             {
-                Expires = new DateTime(2014, 01, 02),
-                Key = "XmlSerializationProviderTests.Key",
+                Expires = new DateTime(2014, 01, 02).ToUniversalTime(),
+                Key = GetSerializer().GetType().Name + "Tests.Key",
                 Value = new TestObject
                 {
                     Bar = "Hello",
@@ -71,7 +78,7 @@ namespace TagCache.Redis.Tests.Serialization
 
             var serialized = serializer.Serialize(value);
 
-            var result = serializer.Deserialize<RedisCacheItem<TestObject>>(serialized);
+            var result = serializer.Deserialize<TCacheItem>(serialized);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(value.Expires, result.Expires);
@@ -117,13 +124,13 @@ namespace TagCache.Redis.Tests.Serialization
             var serializer = GetSerializer();
 
             var serialized = serializer.Serialize(value); // warmup
-            var deserialized = serializer.Deserialize<RedisCacheItem<TestObject>>(serialized); // warmup
+            var deserialized = serializer.Deserialize<TCacheItem>(serialized); // warmup
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             for (int i = 0; i < count; i++)
             {
-                deserialized = serializer.Deserialize<RedisCacheItem<TestObject>>(serialized); // warmup
+                deserialized = serializer.Deserialize<TCacheItem>(serialized); // warmup
             }
             stopwatch.Stop();
 

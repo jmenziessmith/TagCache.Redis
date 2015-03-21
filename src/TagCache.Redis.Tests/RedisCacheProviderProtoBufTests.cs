@@ -8,7 +8,10 @@ namespace TagCache.Redis.Tests
     {
         protected override CacheConfiguration NewCacheConfiguration(RedisConnectionManager connection)
         {
-            return new ProtoBuf.CacheConfiguration(connection);
+            return new ProtoBuf.CacheConfiguration(connection)
+            {
+                CacheItemFactory = new ProtobufRedisCacheItemFactory()
+            };
         }
     }
 }

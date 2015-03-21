@@ -1,35 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TagCache.Redis.Interfaces;
 
 namespace TagCache.Redis
 {
     public class RedisCacheItemProvider
     {
-        private ISerializationProvider _serializer;
-        private IRedisCacheItemFactory _cacheItemFactory;
-
+        private readonly ISerializationProvider _serializer;
+        private readonly IRedisCacheItemFactory _cacheItemFactory;
+        
         public RedisCacheItemProvider(ISerializationProvider serializer, IRedisCacheItemFactory cacheItemFactory)
         {
             _serializer = serializer;
             _cacheItemFactory = cacheItemFactory;
         }
-
-        public RedisCacheItem<T> Get<T>(RedisClient client, string key)
+        
+        public async Task<IRedisCacheItem<T>> GetAsync<T>(RedisClient client, string key)
         {
-            var cacheString = client.Get(key);
+            var cacheString = await client.GetAsync(key);
+
             if (!string.IsNullOrEmpty(cacheString))
             {
-                return _serializer.Deserialize<RedisCacheItem<T>>(cacheString.Value);
+                return _serializer.Deserialize<IRedisCacheItem<T>>(cacheString.Value);
             }
             return null;
         }
 
-
-        public List<RedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
+        public IRedisCacheItem<T> Get<T>(RedisClient client, string key)
         {
-            var result = new List<RedisCacheItem<T>>();
+            var cacheString = client.Get(key);
+
+            if (!string.IsNullOrEmpty(cacheString))
+            {
+                return _serializer.Deserialize<IRedisCacheItem<T>>(cacheString.Value);
+            }
+            return null;
+        }
+
+        public List<IRedisCacheItem<T>> GetMany<T>(RedisClient client, string[] keys)
+        {
+            var result = new List<IRedisCacheItem<T>>();
 
             foreach (var key in keys)
             {
@@ -43,30 +55,60 @@ namespace TagCache.Redis
             return result;
         }
 
-        public bool Set<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
+        public async Task<List<IRedisCacheItem<T>>> GetManyAsync<T>(RedisClient client, string[] keys)
         {
-            if (value != null)
+            var result = new List<IRedisCacheItem<T>>();
+
+            foreach (var key in keys)
             {
-                var cacheItem = Create(value, key, expires, tags);
-                var serialized = _serializer.Serialize(cacheItem);
-                int expirySeconds = GetExpirySeconds(expires);
-                client.Set(key, serialized, expirySeconds);
-                return true;
+                var r = await GetAsync<T>(client, key);
+                if (r != null)
+                {
+                    result.Add(r);
+                }
             }
-            return false;
+
+            return result;
         }
 
+        public async Task<bool> SetAsync<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            var cacheItem = Create(value, key, expires, tags);
+            var serialized = _serializer.Serialize(cacheItem);
+            int expirySeconds = GetExpirySeconds(expires);
+            await client.SetAsync(key, serialized, expirySeconds);
+            return true;
+        }
+
+        public bool Set<T>(RedisClient client, T value, string key, DateTime expires, IEnumerable<string> tags)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            var cacheItem = Create(value, key, expires, tags);
+            var serialized = _serializer.Serialize(cacheItem);
+            int expirySeconds = GetExpirySeconds(expires);
+            client.Set(key, serialized, expirySeconds);
+            return true;
+        }
 
         private IRedisCacheItem<T> Create<T>(T value, string key, DateTime expires, IEnumerable<string> tags)
         {
             var tagsList = tags == null ? null : tags.ToList();
 
             var item = _cacheItemFactory.Create(
-                key : key,
-                tags : tagsList,
-                expires : expires,
-                value : value
-                );
+                key: key,
+                tags: tagsList,
+                expires: expires,
+                value: value
+            );
 
             return item;
         }
@@ -78,11 +120,9 @@ namespace TagCache.Redis
         /// <returns></returns>
         private int GetExpirySeconds(DateTime expires)
         {
-            const int additionalSeconds = 86400; // 1 day
-            var seconds = expires.Subtract(DateTime.Now).TotalSeconds; 
+            var seconds = expires.Subtract(DateTime.Now).TotalSeconds;
             var result = (int)seconds;
-            return Math.Max(1,result);
+            return Math.Max(1, result);
         }
-
     }
 }
