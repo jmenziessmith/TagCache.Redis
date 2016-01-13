@@ -11,5 +11,10 @@ namespace TagCache.Redis.Tests.Serialization
         {
             return new XmlSerializationProvider();
         }
+
+        protected override Redis.CacheConfiguration GetCacheConfiguration(RedisConnectionManager redis)
+        { 
+                return new Redis.CacheConfiguration(redis);
+        }
     }
 }

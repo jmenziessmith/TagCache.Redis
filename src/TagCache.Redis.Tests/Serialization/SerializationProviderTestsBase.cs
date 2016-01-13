@@ -6,6 +6,7 @@ using NUnit.Framework;
 using ProtoBuf.Meta;
 using TagCache.Redis.Interfaces;
 using TagCache.Redis.ProtoBuf;
+using TagCache.Redis.Tests.Helpers;
 
 namespace TagCache.Redis.Tests.Serialization
 {
@@ -87,6 +88,36 @@ namespace TagCache.Redis.Tests.Serialization
             Assert.AreEqual(value.Value.Foo, result.Value.Foo);
             Assert.IsTrue((value.Tags.Count() == result.Tags.Count()) && !value.Tags.Except(result.Tags).Any());
         }
+
+
+        [Test]
+        public void Get_AddedObject_ReturnsValue()
+        {
+            var redis = new RedisConnectionManager();
+
+            var configuration = GetCacheConfiguration(redis);
+            var cache = new RedisCacheProvider(configuration);
+            
+            cache.Logger = new TestRedisLogger();
+            string key = "TagCacheTests:Add";
+            var value = new TestObject()
+            {
+                Foo = "Hello",
+                Bar = "World",
+                Score = 11
+            };
+            DateTime expires = new DateTime(2099, 12, 11);
+
+            cache.Set(key, value, expires);
+            var result = cache.Get<TestObject>(key);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(value.Foo, result.Foo);
+            Assert.AreEqual(value.Bar, result.Bar);
+            Assert.AreEqual(value.Score, result.Score);
+        }
+
+        protected abstract Redis.CacheConfiguration GetCacheConfiguration(RedisConnectionManager redis);
 
 
         [Category("Benchmarks")]

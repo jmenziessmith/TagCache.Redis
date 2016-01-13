@@ -11,5 +11,10 @@ namespace TagCache.Redis.Tests.Serialization
         {
             return new ProtoBufSerializationProvider();
         }
+
+        protected override Redis.CacheConfiguration GetCacheConfiguration(RedisConnectionManager redis)
+        {
+            return new ProtoBuf.CacheConfiguration(redis);
+        }
     }
 }
